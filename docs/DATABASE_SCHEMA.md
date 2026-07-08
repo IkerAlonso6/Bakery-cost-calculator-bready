@@ -2,6 +2,8 @@
 
 Schema de PostgreSQL para la base de datos.
 
+> El cálculo de costos se define en `COSTING_MODEL.md`. Este documento solo describe la **persistencia**. Los cálculos se hacen en memoria (dominio Java), no en la base.
+
 ---
 
 ## SQL completo
@@ -30,7 +32,7 @@ CREATE TABLE IF NOT EXISTS units_of_measurement (
 -- =============================================================
 -- Tabla: inputs
 -- Propósito: Materia prima que se compra
--- Reglas: 
+-- Reglas:
 --   - Un insumo no puede tener el mismo nombre que otro
 --   - El precio se puede actualizar cuando fluctúa el mercado
 --   - Debe tener siempre una unidad de medida
@@ -49,10 +51,13 @@ CREATE TABLE IF NOT EXISTS inputs (
 --   - El nombre debe ser único
 --   - Una receta puede tener múltiples ingredientes
 --   - Una receta puede usarse en múltiples productos
+--   - Rinde una cantidad (kg o unidades) por lote -> permite costo por unidad
 -- =============================================================
 CREATE TABLE IF NOT EXISTS recipes (
     id SMALLINT NOT NULL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
+    name VARCHAR(100) NOT NULL UNIQUE,
+    yield_quantity NUMERIC(10, 4) NOT NULL,               -- cuánto rinde el lote
+    yield_unit_id SMALLINT NOT NULL REFERENCES units_of_measurement(id)  -- kg o unidad
 );
 
 -- =============================================================
@@ -78,14 +83,62 @@ CREATE TABLE IF NOT EXISTS ingredients (
 -- Reglas:
 --   - El nombre debe ser único
 --   - Siempre tiene una receta asociada
---   - El precio se asigna manualmente (no se calcula automáticamente)
---   - El precio no puede cambiar la receta del producto
+--   - price es el precio de venta manual (opcional; puede fijarse luego)
+--   - target_margin: override de margen objetivo del producto (NULL = usa el global)
 -- =============================================================
 CREATE TABLE IF NOT EXISTS products (
     id SMALLINT NOT NULL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    price NUMERIC(10, 2) NOT NULL,
+    price NUMERIC(10, 2),                    -- precio manual (nullable: puede no estar fijado)
+    target_margin NUMERIC(5, 4),             -- override, ej 0.3500 = 35% (NULL = global)
     recipe_id SMALLINT NOT NULL REFERENCES recipes(id)
+);
+
+-- =============================================================
+-- Tabla: fixed_costs
+-- Propósito: Costos fijos mensuales itemizados (overhead)
+-- Reglas:
+--   - Cada gasto fijo se carga por separado (gas, agua, luz, alquiler...)
+--   - monthly_amount es el importe mensual
+-- Uso: su suma es F en COSTING_MODEL.md
+-- =============================================================
+CREATE TABLE IF NOT EXISTS fixed_costs (
+    id SMALLINT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,       -- "Gas", "Agua", "Luz", "Alquiler"
+    monthly_amount NUMERIC(12, 2) NOT NULL
+);
+
+-- =============================================================
+-- Tabla: employees
+-- Propósito: Mano de obra mensual itemizada
+-- Reglas:
+--   - Cada empleado se carga por separado
+--   - monthly_salary: sueldo mensual
+--   - monthly_hours: horas trabajadas al mes (métrica informativa: costo por hora)
+-- Uso: la suma de monthly_salary es L en COSTING_MODEL.md
+-- =============================================================
+CREATE TABLE IF NOT EXISTS employees (
+    id SMALLINT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    monthly_salary NUMERIC(12, 2) NOT NULL,
+    monthly_hours NUMERIC(7, 2)              -- opcional, para métrica costo/hora
+);
+
+-- =============================================================
+-- Tabla: cost_settings
+-- Propósito: Parámetros globales de costeo (fila única, id = 1)
+-- Reglas:
+--   - default_target_margin: margen objetivo global (ej 0.3500 = 35%)
+--   - monthly_material_base: base M de absorción (costo de materiales del mes típico)
+--   - currency: moneda para mostrar
+-- Uso: base para tasaIndirecta y precioSugerido en COSTING_MODEL.md
+-- =============================================================
+CREATE TABLE IF NOT EXISTS cost_settings (
+    id SMALLINT NOT NULL PRIMARY KEY DEFAULT 1,
+    default_target_margin NUMERIC(5, 4) NOT NULL,     -- 0.3500 = 35%
+    monthly_material_base NUMERIC(12, 2) NOT NULL,    -- M
+    currency VARCHAR(3) NOT NULL DEFAULT 'ARS',
+    CONSTRAINT cost_settings_singleton CHECK (id = 1)
 );
 
 -- =============================================================
@@ -99,6 +152,11 @@ INSERT INTO units_of_measurement (id, name) VALUES
     (4, 'LITER'),
     (5, 'MILLILITER'),
     (6, 'UNIT')
+ON CONFLICT DO NOTHING;
+
+-- Configuración de costeo por defecto (ajustar a la realidad del negocio)
+INSERT INTO cost_settings (id, default_target_margin, monthly_material_base, currency) VALUES
+    (1, 0.3500, 0.00, 'ARS')
 ON CONFLICT DO NOTHING;
 ```
 
@@ -125,6 +183,8 @@ ON CONFLICT DO NOTHING;
 |---------|------|-------------|-------------|
 | id | SMALLINT | PK | Identificador |
 | name | VARCHAR(100) | UNIQUE, NOT NULL | Nombre de la receta (Baguette Tradicional, etc) |
+| yield_quantity | NUMERIC(10,4) | NOT NULL | Cuánto rinde el lote (ej: 4 unidades, 2.5 kg) |
+| yield_unit_id | SMALLINT | FK, NOT NULL | Unidad del rendimiento (KILOGRAM o UNIT) |
 
 ### ingredients
 | Columna | Tipo | Constraints | Descripción |
@@ -140,63 +200,81 @@ ON CONFLICT DO NOTHING;
 |---------|------|-------------|-------------|
 | id | SMALLINT | PK | Identificador |
 | name | VARCHAR(100) | UNIQUE, NOT NULL | Nombre del producto (Baguette 250g, etc) |
-| price | NUMERIC(10,2) | NOT NULL | Precio de venta (asignado manualmente) |
+| price | NUMERIC(10,2) | NULL | Precio de venta manual (opcional) |
+| target_margin | NUMERIC(5,4) | NULL | Override de margen (NULL = usa el global) |
 | recipe_id | SMALLINT | FK, NOT NULL | Referencia a recipes |
+
+### fixed_costs
+| Columna | Tipo | Constraints | Descripción |
+|---------|------|-------------|-------------|
+| id | SMALLINT | PK | Identificador |
+| name | VARCHAR(100) | UNIQUE, NOT NULL | Concepto (Gas, Agua, Luz, Alquiler) |
+| monthly_amount | NUMERIC(12,2) | NOT NULL | Importe mensual |
+
+### employees
+| Columna | Tipo | Constraints | Descripción |
+|---------|------|-------------|-------------|
+| id | SMALLINT | PK | Identificador |
+| name | VARCHAR(100) | NOT NULL | Nombre del empleado |
+| monthly_salary | NUMERIC(12,2) | NOT NULL | Sueldo mensual |
+| monthly_hours | NUMERIC(7,2) | NULL | Horas/mes (métrica costo por hora) |
+
+### cost_settings (fila única)
+| Columna | Tipo | Constraints | Descripción |
+|---------|------|-------------|-------------|
+| id | SMALLINT | PK, CHECK = 1 | Siempre 1 (singleton) |
+| default_target_margin | NUMERIC(5,4) | NOT NULL | Margen objetivo global (0.3500 = 35%) |
+| monthly_material_base | NUMERIC(12,2) | NOT NULL | Base M de absorción (materiales del mes) |
+| currency | VARCHAR(3) | NOT NULL | Moneda (ARS por defecto) |
 
 ---
 
 ## Relaciones
 
 ```
-units_of_measurement (1)
-           ↑
-           | (1:N)
-           |
-       inputs
+units_of_measurement (1) ──< inputs (N)
+units_of_measurement (1) ──< recipes (N)   [yield_unit_id]
 
-inputs (1)
-       ↑
-       | (1:N)
-       |
-   ingredients (N)
-       |
-       | (N:1)
-       ↓
-   recipes (1)
-       ↑
-       | (1:N)
-       |
-   products (N)
+inputs (1) ──< ingredients (N) >── (1) recipes
+recipes (1) ──< products (N)
+
+fixed_costs      (independiente, se suma para F)
+employees        (independiente, se suma para L)
+cost_settings    (singleton, parámetros de costeo M / margen / moneda)
 ```
 
 ---
 
 ## Notas importantes
 
-1. **IDs SMALLINT**: Suficientes para un negocio pequeño a mediano. SMALLINT soporta hasta 32,767.
+1. **IDs SMALLINT**: Suficientes para un negocio pequeño a mediano (hasta 32.767).
 
-2. **Cascada**: Los IDs están fijos (no usan AUTO_INCREMENT). Se asignan manualmente desde la aplicación o secuencias de BD.
+2. **IDs asignados**: no usan AUTO_INCREMENT; se asignan desde la aplicación o por secuencias de BD.
 
-3. **Entidad débil (Ingredients)**: No existe sin una Recipe. Si se borra una Recipe, se borra en cascada (aunque no está explícito en el schema, debe configurarse en JPA).
+3. **Entidad débil (ingredients)**: no existe sin una Recipe. Si se borra una Recipe debe borrarse en cascada (configurar en JPA).
 
-4. **UNIQUE(recipe_id, input_id)**: Previene que se agregue el mismo insumo dos veces a la misma receta.
+4. **UNIQUE(recipe_id, input_id)**: previene el mismo insumo dos veces en una receta.
 
-5. **Conversión de unidades**: Por ahora no hay tabla de conversión (kg ↔ g). Se maneja en lógica de aplicación.
+5. **Rendimiento persistido**: `recipes.yield_quantity` + `yield_unit_id` reemplazan al viejo `yieldInKilograms` que solo vivía en el dominio. Permite calcular el costo por unidad de forma persistente.
 
-6. **Cálculo de costos**: Se hace en memoria, no en BD. La BD solo almacena datos.
+6. **Costos indirectos (fixed_costs, employees, cost_settings)**: no se asignan por FK a productos. Se **imputan por absorción** en tiempo de cálculo (ver `COSTING_MODEL.md`). La BD solo guarda los importes mensuales y los parámetros.
+
+7. **`monthly_material_base` (M)**: es un parámetro que el negocio mantiene (costo de materiales de un mes típico). Se puede recalcular a futuro a partir del histórico de producción.
+
+8. **Conversión de unidades (kg ↔ g, l ↔ ml)**: se maneja en lógica de aplicación, no hay tabla de conversión.
 
 ---
 
-## Preguntas sobre el schema
+## Preguntas frecuentes sobre el schema
 
-**¿Por qué IDs SMALLINT en lugar de IDENTITY?**
-Porque el proyecto usa IDs asignados, no autoincremento. La lógica está en la aplicación.
+**¿Por qué `products.price` ahora es nullable?**
+Porque el flujo pasa a ser: cargar receta → ver costo total → obtener precio sugerido → (opcional) fijar precio manual. Un producto puede existir sin precio fijado todavía.
 
-**¿Por qué no hay tabla de auditoría (created_at, updated_at)?**
-Por ahora no es necesario. Se puede agregar después si el negocio lo requiere.
+**¿Por qué los costos fijos y sueldos no tienen FK a producto?**
+Porque son indirectos: se reparten entre todos los productos por absorción, no pertenecen a uno solo. Ver `COSTING_MODEL.md`, sección 2.
 
-**¿Qué pasa si se borra un Input que está en uso en una Recipe?**
-Actualmente la FK previene el borrado. Se puede cambiar a CASCADE si el requisito lo pide.
+**¿Por qué `cost_settings` es una fila única?**
+Los parámetros de costeo (margen global, base de materiales, moneda) son del negocio, no por producto. El CHECK `id = 1` garantiza una sola fila.
 
-**¿Por qué yield no está en la tabla recipes?**
-Se optó por dejarla en el modelo de dominio (Java), no en BD. Se puede agregar si es necesario persistirla.
+**¿Y si en el futuro se quiere costear por hora?**
+Se agrega `recipes.production_time` y se ajusta el cálculo. El schema actual no lo impide. Ver `COSTING_MODEL.md`, sección 6.
