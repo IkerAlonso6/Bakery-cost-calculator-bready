@@ -7,8 +7,8 @@ Trackea el progreso de desarrollo. Actualizá conforme completes cada ticket (ve
 ## Resumen
 
 **Último update:** 2026-07-08
-**Tickets completados:** 0/35
-**Etapa actual:** Documentación completada — pendiente inicio de implementación (Domain Layer)
+**Tickets completados:** 9/35
+**Etapa actual:** Domain Layer completado ✅ — siguiente: Application Layer (TICKET-010)
 
 Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
@@ -27,15 +27,15 @@ Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
 ## Domain Layer
 
-- [ ] TICKET-001 — Enum UnitOfMeasurement ⏳
-- [ ] TICKET-002 — Input ⏳
-- [ ] TICKET-003 — Ingredient ⏳
-- [ ] TICKET-004 — Recipe (con rendimiento) ⏳
-- [ ] TICKET-005 — Product (precio opcional + margen override) ⏳
-- [ ] TICKET-006 — FixedCost ⏳
-- [ ] TICKET-007 — Employee ⏳
-- [ ] TICKET-008 — CostSettings ⏳
-- [ ] TICKET-009 — CostingService + ProductCosting ⏳
+- [x] TICKET-001 — Enum UnitOfMeasurement ✅ 2026-07-08
+- [x] TICKET-002 — Input ✅ 2026-07-08
+- [x] TICKET-003 — Ingredient ✅ 2026-07-08
+- [x] TICKET-004 — Recipe (con rendimiento) ✅ 2026-07-08
+- [x] TICKET-005 — Product (precio opcional + margen override) ✅ 2026-07-08
+- [x] TICKET-006 — FixedCost ✅ 2026-07-08
+- [x] TICKET-007 — Employee ✅ 2026-07-08
+- [x] TICKET-008 — CostSettings ✅ 2026-07-08
+- [x] TICKET-009 — CostingService + ProductCosting ✅ 2026-07-08 (9 tests verdes: reproduce el ejemplo de COSTING_MODEL.md)
 
 ## Application Layer
 
