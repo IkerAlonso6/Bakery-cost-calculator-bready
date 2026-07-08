@@ -7,8 +7,8 @@ Trackea el progreso de desarrollo. Actualizá conforme completes cada ticket (ve
 ## Resumen
 
 **Último update:** 2026-07-08
-**Tickets completados:** 9/35
-**Etapa actual:** Domain Layer completado ✅ — siguiente: Application Layer (TICKET-010)
+**Tickets completados:** 19/35
+**Etapa actual:** Application Layer completado ✅ — siguiente: Infrastructure Layer (TICKET-020)
 
 Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
@@ -39,16 +39,16 @@ Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
 ## Application Layer
 
-- [ ] TICKET-010 — Ports de repositorio ⏳
-- [ ] TICKET-011 — Excepciones ⏳
-- [ ] TICKET-012 — DTOs ⏳
-- [ ] TICKET-013 — Mappers dominio↔DTO ⏳
-- [ ] TICKET-014 — InputService ⏳
-- [ ] TICKET-015 — RecipeService ⏳
-- [ ] TICKET-016 — ProductService ⏳
-- [ ] TICKET-017 — FixedCostService y EmployeeService ⏳
-- [ ] TICKET-018 — CostSettingsService ⏳
-- [ ] TICKET-019 — CostingAppService ⏳
+- [x] TICKET-010 — Ports de repositorio ✅ 2026-07-08
+- [x] TICKET-011 — Excepciones ✅ 2026-07-08
+- [x] TICKET-012 — DTOs ✅ 2026-07-08
+- [x] TICKET-013 — Mappers dominio↔DTO ✅ 2026-07-08
+- [x] TICKET-014 — InputService ✅ 2026-07-08
+- [x] TICKET-015 — RecipeService ✅ 2026-07-08 (addIngredient resuelve Input por id)
+- [x] TICKET-016 — ProductService ✅ 2026-07-08 (incluye updateTargetMargin)
+- [x] TICKET-017 — FixedCostService y EmployeeService ✅ 2026-07-08 (con totales mensuales F y L)
+- [x] TICKET-018 — CostSettingsService ✅ 2026-07-08
+- [x] TICKET-019 — CostingAppService ✅ 2026-07-08
 
 ## Infrastructure Layer
 
