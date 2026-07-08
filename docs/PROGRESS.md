@@ -1,259 +1,113 @@
 # Progress - BakeryCostCalculator
 
-Trackea el progreso de desarrollo. Actualiza este archivo conforme completes cada ticket.
+Trackea el progreso de desarrollo. Actualizá conforme completes cada ticket (ver `TICKETS.md`).
 
 ---
 
-## Resumen de progreso
+## Resumen
 
-**Inicio:** [Tu fecha aquí]  
-**Último update:** [Actualiza cada vez que completes un ticket]  
-**Tickets completados:** [X]/30  
-**Etapa actual:** [Domain Layer / Application Layer / Infrastructure Layer / Web Layer / Configuration]
+**Último update:** 2026-07-08
+**Tickets completados:** 0/35
+**Etapa actual:** Documentación completada — pendiente inicio de implementación (Domain Layer)
 
----
-
-## Domain Layer (5 tickets)
-
-- [ ] **TICKET-001**: Crear enum UnitOfMeasurement
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-002**: Crear clase Input (dominio puro)
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-003**: Crear clase Ingredient (dominio puro)
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-004**: Crear clase Recipe (dominio puro)
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-005**: Crear clase Product (dominio puro)
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
 ---
 
-## Application Layer - Interfaces y Mappers (9 tickets)
+## Documentación (base para implementar)
 
-- [ ] **TICKET-006**: Crear interfaces de Repositorio (Ports)
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-007**: Crear InputMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-008**: Crear IngredientMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-009**: Crear RecipeMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-010**: Crear ProductMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-011**: Crear DTOs
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+- [x] COSTING_MODEL.md — modelo de costeo (materiales + mano de obra + fijos, precio sugerido) ✅
+- [x] DATABASE_SCHEMA.md — schema extendido (fixed_costs, employees, cost_settings, yield, margen) ✅
+- [x] DOMAIN_MODEL.md ✅
+- [x] ARCHITECTURE.md ✅
+- [x] CODING_STANDARDS.md ✅
+- [x] TICKETS.md — backlog regenerado ✅
 
 ---
 
-## Application Layer - Servicios (4 tickets)
+## Domain Layer
 
-- [ ] **TICKET-012**: Crear InputService
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+- [ ] TICKET-001 — Enum UnitOfMeasurement ⏳
+- [ ] TICKET-002 — Input ⏳
+- [ ] TICKET-003 — Ingredient ⏳
+- [ ] TICKET-004 — Recipe (con rendimiento) ⏳
+- [ ] TICKET-005 — Product (precio opcional + margen override) ⏳
+- [ ] TICKET-006 — FixedCost ⏳
+- [ ] TICKET-007 — Employee ⏳
+- [ ] TICKET-008 — CostSettings ⏳
+- [ ] TICKET-009 — CostingService + ProductCosting ⏳
 
-- [ ] **TICKET-013**: Crear RecipeService
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+## Application Layer
 
-- [ ] **TICKET-014**: Crear ProductService
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+- [ ] TICKET-010 — Ports de repositorio ⏳
+- [ ] TICKET-011 — Excepciones ⏳
+- [ ] TICKET-012 — DTOs ⏳
+- [ ] TICKET-013 — Mappers dominio↔DTO ⏳
+- [ ] TICKET-014 — InputService ⏳
+- [ ] TICKET-015 — RecipeService ⏳
+- [ ] TICKET-016 — ProductService ⏳
+- [ ] TICKET-017 — FixedCostService y EmployeeService ⏳
+- [ ] TICKET-018 — CostSettingsService ⏳
+- [ ] TICKET-019 — CostingAppService ⏳
 
-- [ ] **TICKET-015**: Crear excepciones customizadas
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+## Infrastructure Layer
 
----
+- [ ] TICKET-020 — Migración SQL del schema (+ Flyway) ⏳
+- [ ] TICKET-021 — Entidades JPA ⏳
+- [ ] TICKET-022 — Entity mappers ⏳
+- [ ] TICKET-023 — JpaRepositories ⏳
+- [ ] TICKET-024 — RepositoryImpl ⏳
+- [ ] TICKET-025 — CorsConfig ⏳
 
-## Infrastructure Layer - Entidades JPA (1 ticket)
+## Web Layer
 
-- [ ] **TICKET-016**: Crear entidades JPA
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+- [ ] TICKET-026 — InputController ⏳
+- [ ] TICKET-027 — RecipeController ⏳
+- [ ] TICKET-028 — ProductController (incluye /pricing) ⏳
+- [ ] TICKET-029 — FixedCostController y EmployeeController ⏳
+- [ ] TICKET-030 — CostSettingsController ⏳
+- [ ] TICKET-031 — GlobalExceptionHandler ⏳
 
----
+## Configuration
 
-## Infrastructure Layer - Entity Mappers (4 tickets)
+- [ ] TICKET-032 — application.properties ⏳
 
-- [ ] **TICKET-017**: Crear InputEntityMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+## Testing (opcional, después)
 
-- [ ] **TICKET-018**: Crear IngredientEntityMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-019**: Crear RecipeEntityMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-020**: Crear ProductEntityMapper
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Infrastructure Layer - Repositories (4 tickets)
-
-- [ ] **TICKET-021**: Crear JpaRepositories
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-022**: Crear InputRepositoryImpl
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-023**: Crear RecipeRepositoryImpl
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-024**: Crear ProductRepositoryImpl
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Infrastructure Layer - Config (1 ticket)
-
-- [ ] **TICKET-025**: Crear CorsConfig
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Web Layer - Controllers (3 tickets)
-
-- [ ] **TICKET-026**: Crear InputController
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-027**: Crear RecipeController
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-028**: Crear ProductController
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Web Layer - Exception Handling (1 ticket)
-
-- [ ] **TICKET-029**: Crear GlobalExceptionHandler
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Configuration (1 ticket)
-
-- [ ] **TICKET-030**: Configurar application.properties
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
----
-
-## Testing (Opcional, después)
-
-- [ ] **TICKET-031**: Crear tests para dominio
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-032**: Crear tests para servicios
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
-
-- [ ] **TICKET-033**: Crear tests para controllers
-  - Status: ⏳ Pendiente
-  - Completado: [fecha]
-  - Notas:
+- [ ] TICKET-033 — Tests de dominio ⏳
+- [ ] TICKET-034 — Tests de servicios ⏳
+- [ ] TICKET-035 — Tests de controllers ⏳
 
 ---
 
 ## Notas de desarrollo
 
 ### Problemas encontrados
-
-[Documenta problemas, errores, o decisiones tomadas aquí]
-
-Ejemplo:
-- TICKET-005: El método getMarginPercentage() necesita manejo de división por cero
-- TICKET-012: El InputService requiere transacción para operaciones complejas
+[Documentar problemas, errores o decisiones tomadas]
 
 ### Cambios en decisiones de diseño
-
-[Si necesitas desviarte del plan original, documenta por qué aquí]
+[Documentar desvíos del plan y su motivo]
 
 ---
 
 ## Checklist final antes de testing
 
-- [ ] Todos los tickets 001-030 completados
-- [ ] Se compiló sin errores
-- [ ] Se ejecutó el seed de units_of_measurement
-- [ ] Los DTOs tienen validaciones
-- [ ] Los servicios tienen manejo de excepciones
-- [ ] Los controllers retornan códigos HTTP correctos
-- [ ] CORS está configurado para Angular
+- [ ] Tickets 001–032 completados
+- [ ] Compila sin errores (`mvn clean install`)
+- [ ] Migración Flyway aplicada (tablas + seeds, incluida cost_settings)
+- [ ] DTOs con validaciones
+- [ ] Servicios con manejo de excepciones
+- [ ] Controllers con códigos HTTP correctos
+- [ ] `GET /api/products/{id}/pricing` devuelve desglose + precio sugerido
+- [ ] CostingService verificado contra el ejemplo de COSTING_MODEL.md
+- [ ] CORS configurado para Angular
 
 ---
 
 ## Próximos pasos después del backend
 
-1. Inicializar proyecto Angular
-2. Crear servicio HTTP para consumir API
-3. Implementar pantallas: Dashboard, Insumos, Recetas, Productos
+1. Inicializar proyecto Angular (frontend/)
+2. Servicio HTTP para consumir la API
+3. Pantallas: Dashboard (rentabilidad), Insumos, Recetas, Productos, Costos fijos, Empleados, Configuración de costeo
 4. Testing e2e
-5. Deploy a Railway/Render
+5. Deploy (Railway/Render)

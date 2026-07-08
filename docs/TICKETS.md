@@ -1,536 +1,177 @@
 # Development Tickets - BakeryCostCalculator
 
-Tickets organizados por capa, en orden de implementación. Cada ticket es autocontendido y puede ejecutarse independientemente una vez completados sus dependencias.
+Backlog por capas, en orden de implementación. Cada ticket es autocontenido una vez completadas sus dependencias.
+
+**Antes de implementar, leer:** `COSTING_MODEL.md`, `DOMAIN_MODEL.md`, `ARCHITECTURE.md`, `CODING_STANDARDS.md`, `DATABASE_SCHEMA.md`.
+
+Convención de rutas: paquete base `backend/src/main/java/com/bakery/`.
 
 ---
 
-## Domain Layer Tickets
+## Domain Layer
 
-### TICKET-001: Crear enum UnitOfMeasurement
-**Dependencias:** Ninguna  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/domain/model/UnitOfMeasurement.java`
+### TICKET-001: Enum UnitOfMeasurement
+**Dep:** ninguna · **Archivo:** `domain/model/UnitOfMeasurement.java`
+Valores KILOGRAM(kg), GRAM(g), MILLIGRAM(mg), LITER(l), MILLILITER(ml), UNIT(u), cada uno con su símbolo.
 
-**Descripción:**
-Crear el enum UnitOfMeasurement con los valores: KILOGRAM, GRAM, MILLIGRAM, LITER, MILLILITER, UNIT.
-Cada valor debe tener un símbolo asociado (kg, g, mg, l, ml, u).
+### TICKET-002: Clase Input
+**Dep:** 001 · **Archivo:** `domain/model/Input.java`
+Atributos `id, name, unitOfMeasure, price`. Constructor `(name, unitOfMeasure, price)` con validaciones (name no vacío, price ≥ 0, unit no null). `updatePrice()`. Ref: DOMAIN_MODEL.md · Input.
 
-**Validaciones:** Ninguna (es un enum)
+### TICKET-003: Clase Ingredient
+**Dep:** 002 · **Archivo:** `domain/model/Ingredient.java`
+Atributos `id, input, quantity`. Validaciones (input no null, quantity > 0). `calculateCost()` = price × quantity.
 
----
+### TICKET-004: Clase Recipe (con rendimiento)
+**Dep:** 003 · **Archivo:** `domain/model/Recipe.java`
+Atributos `id, name, ingredients (List), yieldQuantity, yieldUnit`. Constructor `(name, yieldQuantity, yieldUnit)`. `addIngredient()` (no duplicar input), `getIngredients()` inmodificable, `calculateTotalCost()` (costo del lote), **`calculateCostPerUnit()` = totalCost / yieldQuantity**. Ref: DOMAIN_MODEL.md · Recipe.
 
-### TICKET-002: Crear clase Input (dominio puro)
-**Dependencias:** TICKET-001  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/domain/model/Input.java`
+### TICKET-005: Clase Product (precio opcional + margen override)
+**Dep:** 004 · **Archivo:** `domain/model/Product.java`
+Atributos `id, name, recipe, price (nullable), targetMargin (nullable)`. Constructor `(name, recipe)`. `updatePrice()`, `updateTargetMargin()` (0 ≤ x < 1), `getMaterialCostPerUnit()` (delega en recipe). **No** calcula total ni precio sugerido (eso es CostingService).
 
-**Descripción:**
-Crear la clase Input con:
-- Atributos: id (Integer), name (String), unitOfMeasure (UnitOfMeasurement), price (BigDecimal)
-- Constructor con parámetros (name, unitOfMeasure, price)
-- Validaciones en constructor: name no vacío, price >= 0, unitOfMeasure no null
-- Getters privados para id, name, unitOfMeasure (solo lectura)
-- Método updatePrice(BigDecimal) con validación
-- toString()
+### TICKET-006: Clase FixedCost
+**Dep:** ninguna · **Archivo:** `domain/model/FixedCost.java`
+Atributos `id, name, monthlyAmount`. Validaciones (name no vacío, monthlyAmount ≥ 0).
 
-Referencia: DOMAIN_MODEL.md - sección Input
+### TICKET-007: Clase Employee
+**Dep:** ninguna · **Archivo:** `domain/model/Employee.java`
+Atributos `id, name, monthlySalary, monthlyHours (nullable)`. `costPerHour()` (métrica; null si sin horas).
 
----
+### TICKET-008: Clase CostSettings
+**Dep:** ninguna · **Archivo:** `domain/model/CostSettings.java`
+Atributos `defaultTargetMargin, monthlyMaterialBase (M), currency`. Validaciones (margen en [0,1), M > 0).
 
-### TICKET-003: Crear clase Ingredient (dominio puro)
-**Dependencias:** TICKET-002  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/domain/model/Ingredient.java`
-
-**Descripción:**
-Crear la clase Ingredient con:
-- Atributos: id (Integer), input (Input), quantity (BigDecimal)
-- Constructor con parámetros (input, quantity)
-- Validaciones: quantity > 0, input no null
-- Método calculateCost() que retorna input.getPrice() * quantity
-- Getters para todos los atributos (solo lectura)
-- toString()
-
-Referencia: DOMAIN_MODEL.md - sección Ingredient
+### TICKET-009: CostingService (dominio) + resultado ProductCosting
+**Dep:** 005, 006, 007, 008 · **Archivos:** `domain/model/CostingService.java`, `domain/model/ProductCosting.java`
+Implementa las fórmulas de COSTING_MODEL.md: `tasaIndirecta = (F+L)/M`; desglose `materialCost, laborCost, fixedCost, totalCost`; `suggestedPrice = totalCost/(1-margin)`; `realMargin`. Cuidar división por cero, margen ≥ 1 y redondeo HALF_UP. **Test obligatorio:** reproducir el ejemplo numérico del COSTING_MODEL.md.
 
 ---
 
-### TICKET-004: Crear clase Recipe (dominio puro)
-**Dependencias:** TICKET-003  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/domain/model/Recipe.java`
+## Application Layer
 
-**Descripción:**
-Crear la clase Recipe con:
-- Atributos: id (Integer), ingredients (List<Ingredient> privada), yieldInKilograms (BigDecimal)
-- Constructor sin parámetros (ingredients = lista vacía)
-- Método addIngredient(Ingredient) con validación (no null)
-- Método getIngredients() que retorna Collections.unmodifiableList()
-- Método calculateTotalCost() que suma costos de ingredientes
-- Método calculateCostPerKilogram() que retorna totalCost / yieldInKilograms
-- Setters solo para yieldInKilograms (con validación > 0)
-- toString()
+### TICKET-010: Ports de repositorio
+**Dep:** 002,004,005,006,007,008 · **Archivos:** `application/port/I{Input,Recipe,Product,FixedCost,Employee,CostSettings}Repository.java`
+Métodos base: `save`, `findById→Optional`, `findAll`, `deleteById`. CostSettings expone `get()`/`save()` (singleton).
 
-Referencia: DOMAIN_MODEL.md - sección Recipe
+### TICKET-011: Excepciones
+**Dep:** ninguna · **Archivos:** `application/exception/{Input,Recipe,Product,FixedCost,Employee}NotFoundException.java`
+Extienden RuntimeException con mensaje claro.
 
----
+### TICKET-012: DTOs
+**Dep:** ninguna · **Archivos:** `application/dto/*DTO.java`
+`InputDTO, IngredientDTO, RecipeDTO, ProductDTO, FixedCostDTO, EmployeeDTO, CostSettingsDTO, ProductCostingDTO`. Validaciones según CODING_STANDARDS.md · DTOs (incluye targetMargin opcional, yield en RecipeDTO, desglose en ProductCostingDTO).
 
-### TICKET-005: Crear clase Product (dominio puro)
-**Dependencias:** TICKET-004  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/domain/model/Product.java`
+### TICKET-013: Mappers dominio↔DTO
+**Dep:** 010, 012 · **Archivos:** `application/mapper/*Mapper.java`
+Uno por entidad. `toDomain`, `toDto`, versión lista. Incluir `ProductCostingMapper` (ProductCosting → ProductCostingDTO).
 
-**Descripción:**
-Crear la clase Product con:
-- Atributos: id (Integer), name (String), recipe (Recipe), price (BigDecimal)
-- Constructor con parámetros (name, recipe, price)
-- Validaciones en constructor: name no vacío, recipe no null, price >= 0
-- Getters para todos (solo lectura)
-- Método updatePrice(BigDecimal) con validación
-- Método getRecipeCost() que delega en recipe.calculateCostPerKilogram()
-- Método getMarginPercentage() que calcula ((price - recipeCost) / recipeCost) * 100
-- toString()
+### TICKET-014: InputService
+**Dep:** 010, 011, 013 · `application/service/InputService.java`
+create, getById (404), getAll, updatePrice, delete.
 
-Referencia: DOMAIN_MODEL.md - sección Product
+### TICKET-015: RecipeService
+**Dep:** 010, 011, 013 · `application/service/RecipeService.java`
+create (con yield), getById (404), getAll, addIngredient, calculateCost (costo por unidad), delete.
 
----
+### TICKET-016: ProductService
+**Dep:** 010, 011, 013 · `application/service/ProductService.java`
+create, getById (404), getAll, updatePrice, updateMargin, delete.
 
-## Application Layer Tickets
+### TICKET-017: FixedCostService y EmployeeService
+**Dep:** 010, 011, 013 · `application/service/{FixedCostService,EmployeeService}.java`
+CRUD estándar de costos fijos y empleados.
 
-### TICKET-006: Crear interfaces de Repositorio (Ports)
-**Dependencias:** TICKET-001, TICKET-002, TICKET-004, TICKET-005  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/port/IInputRepository.java`
-- `backend/src/main/java/com/bakery/application/port/IRecipeRepository.java`
-- `backend/src/main/java/com/bakery/application/port/IProductRepository.java`
+### TICKET-018: CostSettingsService
+**Dep:** 010, 013 · `application/service/CostSettingsService.java`
+get() y update() de la fila única.
 
-**Descripción:**
-Crear las interfaces de repositorio con métodos:
-- save(T entity) -> T
-- findById(Integer id) -> Optional<T>
-- findAll() -> List<T>
-- deleteById(Integer id) -> void
-
-Referencia: ARCHITECTURE.md - sección Port
+### TICKET-019: CostingAppService
+**Dep:** 009, 016, 017, 018 · `application/service/CostingAppService.java`
+`getProductCosting(id)`: reúne Product + FixedCosts + Employees + CostSettings, invoca `CostingService` y devuelve `ProductCosting`. Endpoint central del sistema.
 
 ---
 
-### TICKET-007: Crear InputMapper
-**Dependencias:** TICKET-002, TICKET-006  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/mapper/InputMapper.java`
+## Infrastructure Layer
 
-**Descripción:**
-Crear mapper que convierte:
-- InputDTO -> Input (dominio)
-- Input -> InputDTO
-- List<Input> -> List<InputDTO>
+### TICKET-020: Migración SQL del schema
+**Dep:** ninguna · **Archivo:** `src/main/resources/db/migration/V1__init.sql`
+Todo el DDL + seeds de DATABASE_SCHEMA.md (incluye fixed_costs, employees, cost_settings, yield en recipes, target_margin en products). Agregar dependencia Flyway al `pom.xml`.
 
-Referencia: CODING_STANDARDS.md - sección Mappers
+### TICKET-021: Entidades JPA
+**Dep:** 020 · **Archivos:** `infrastructure/persistence/entity/*Entity.java`
+`UnitOfMeasurementEntity, InputEntity, IngredientEntity, RecipeEntity, ProductEntity, FixedCostEntity, EmployeeEntity, CostSettingsEntity`. Mapear exactamente a las tablas. Relaciones LAZY, constructor vacío.
 
----
+### TICKET-022: Entity mappers (dominio↔entity)
+**Dep:** 021 · **Archivos:** `infrastructure/persistence/mapper/*EntityMapper.java`
+Uno por entidad. Cuidar la lista de ingredientes en Recipe.
 
-### TICKET-008: Crear IngredientMapper
-**Dependencias:** TICKET-003, TICKET-007  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/mapper/IngredientMapper.java`
+### TICKET-023: JpaRepositories
+**Dep:** 021 · **Archivos:** `infrastructure/persistence/jpa/*JpaRepository.java`
+Extienden `JpaRepository<Entity, Integer>`; `findByName` donde aplique.
 
-**Descripción:**
-Crear mapper que convierte:
-- IngredientDTO -> Ingredient (dominio)
-- Ingredient -> IngredientDTO
-- List<Ingredient> -> List<IngredientDTO>
+### TICKET-024: RepositoryImpl
+**Dep:** 010, 022, 023 · **Archivos:** `infrastructure/persistence/repository/*RepositoryImpl.java`
+Implementan los ports usando JpaRepository + EntityMapper. Incluye CostSettings (singleton).
 
-Referencia: CODING_STANDARDS.md - sección Mappers
+### TICKET-025: CorsConfig
+**Dep:** ninguna · **Archivo:** `infrastructure/config/CorsConfig.java`
+Permitir `http://localhost:4200`, métodos GET/POST/PUT/DELETE.
 
 ---
 
-### TICKET-009: Crear RecipeMapper
-**Dependencias:** TICKET-004, TICKET-008  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/mapper/RecipeMapper.java`
+## Web Layer
 
-**Descripción:**
-Crear mapper que convierte:
-- RecipeDTO -> Recipe (dominio)
-- Recipe -> RecipeDTO (incluir ingredientes)
-- List<Recipe> -> List<RecipeDTO>
+### TICKET-026: InputController
+**Dep:** 014 · `web/controller/InputController.java`
+POST, GET, GET/{id}, PUT/{id}/price, DELETE/{id}. Códigos 201/200/204/404.
 
-Referencia: CODING_STANDARDS.md - sección Mappers
+### TICKET-027: RecipeController
+**Dep:** 015 · `web/controller/RecipeController.java`
+POST, GET, GET/{id}, POST/{id}/ingredients, GET/{id}/cost, DELETE/{id}.
 
----
+### TICKET-028: ProductController (incluye pricing)
+**Dep:** 016, 019 · `web/controller/ProductController.java`
+POST, GET, GET/{id}, PUT/{id}/price, PUT/{id}/margin, **GET/{id}/pricing** (desglose + precio sugerido + margen real), DELETE/{id}.
 
-### TICKET-010: Crear ProductMapper
-**Dependencias:** TICKET-005, TICKET-009  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/mapper/ProductMapper.java`
+### TICKET-029: FixedCostController y EmployeeController
+**Dep:** 017 · `web/controller/{FixedCostController,EmployeeController}.java`
+CRUD REST de cada uno.
 
-**Descripción:**
-Crear mapper que convierte:
-- ProductDTO -> Product (dominio)
-- Product -> ProductDTO
-- List<Product> -> List<ProductDTO>
+### TICKET-030: CostSettingsController
+**Dep:** 018 · `web/controller/CostSettingsController.java`
+GET y PUT de la configuración de costeo.
 
-Referencia: CODING_STANDARDS.md - sección Mappers
+### TICKET-031: GlobalExceptionHandler
+**Dep:** 011 · `web/exception/GlobalExceptionHandler.java`
+`*NotFoundException`→404, validación/`IllegalArgumentException`→400, genéricas→500. Respuesta uniforme.
 
 ---
 
-### TICKET-011: Crear DTOs
-**Dependencias:** TICKET-007, TICKET-008, TICKET-009, TICKET-010  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/dto/InputDTO.java`
-- `backend/src/main/java/com/bakery/application/dto/IngredientDTO.java`
-- `backend/src/main/java/com/bakery/application/dto/RecipeDTO.java`
-- `backend/src/main/java/com/bakery/application/dto/ProductDTO.java`
+## Configuration
 
-**Descripción:**
-Crear DTOs con validaciones:
-- InputDTO: name (@NotBlank), unitOfMeasure (@NotBlank), price (@NotNull, @Positive)
-- IngredientDTO: inputId (@NotNull), quantity (@NotNull, @Positive)
-- RecipeDTO: name (@NotBlank), ingredients (List)
-- ProductDTO: name (@NotBlank), recipeId (@NotNull), price (@NotNull, @Positive)
-
-Referencia: CODING_STANDARDS.md - sección DTOs
+### TICKET-032: application.properties
+**Dep:** 020 · `src/main/resources/application.properties`
+Datasource PostgreSQL, `ddl-auto=none`, Flyway habilitado, `server.port=8080`. Documentar la variable de password.
 
 ---
 
-### TICKET-012: Crear InputService
-**Dependencias:** TICKET-002, TICKET-006, TICKET-007  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/service/InputService.java`
+## Testing (después del backend funcional)
 
-**Descripción:**
-Crear servicio con métodos:
-- createInput(String name, UnitOfMeasurement unit, BigDecimal price) -> Input
-- getInputById(Integer id) -> Input (lanza InputNotFoundException si no existe)
-- getAllInputs() -> List<Input>
-- updateInputPrice(Integer id, BigDecimal newPrice) -> Input
-- deleteInput(Integer id) -> void
-
-Referencia: CODING_STANDARDS.md - sección Servicios
+### TICKET-033: Tests de dominio
+Foco en validaciones y en `CostingService` (reproducir ejemplo de COSTING_MODEL.md).
+### TICKET-034: Tests de servicios (mock de ports)
+### TICKET-035: Tests de controllers (`@WebMvcTest` + MockMvc)
 
 ---
 
-### TICKET-013: Crear RecipeService
-**Dependencias:** TICKET-004, TICKET-006, TICKET-009  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/service/RecipeService.java`
-
-**Descripción:**
-Crear servicio con métodos:
-- createRecipe(String name) -> Recipe
-- getRecipeById(Integer id) -> Recipe (lanza RecipeNotFoundException si no existe)
-- getAllRecipes() -> List<Recipe>
-- addIngredientToRecipe(Integer recipeId, Ingredient ingredient) -> Recipe
-- calculateRecipeCost(Integer recipeId) -> BigDecimal
-- deleteRecipe(Integer id) -> void
-
-Referencia: CODING_STANDARDS.md - sección Servicios
-
----
-
-### TICKET-014: Crear ProductService
-**Dependencias:** TICKET-005, TICKET-006, TICKET-010  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/service/ProductService.java`
-
-**Descripción:**
-Crear servicio con métodos:
-- createProduct(String name, Integer recipeId, BigDecimal price) -> Product
-- getProductById(Integer id) -> Product (lanza ProductNotFoundException si no existe)
-- getAllProducts() -> List<Product>
-- updateProductPrice(Integer id, BigDecimal newPrice) -> Product
-- getProductMargin(Integer id) -> BigDecimal
-- deleteProduct(Integer id) -> void
-
-Referencia: CODING_STANDARDS.md - sección Servicios
-
----
-
-### TICKET-015: Crear excepciones customizadas
-**Dependencias:** Ninguna  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/application/exception/InputNotFoundException.java`
-- `backend/src/main/java/com/bakery/application/exception/RecipeNotFoundException.java`
-- `backend/src/main/java/com/bakery/application/exception/ProductNotFoundException.java`
-
-**Descripción:**
-Crear excepciones que extienden RuntimeException con mensajes claros.
-
-Referencia: CODING_STANDARDS.md - sección Manejo de excepciones
-
----
-
-## Infrastructure Layer Tickets
-
-### TICKET-016: Crear entidades JPA
-**Dependencias:** TICKET-001  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/entity/UnitOfMeasurementEntity.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/entity/InputEntity.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/entity/IngredientEntity.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/entity/RecipeEntity.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/entity/ProductEntity.java`
-
-**Descripción:**
-Crear entidades JPA con:
-- Anotaciones @Entity y @Table
-- @Id con @GeneratedValue(IDENTITY)
-- @Column con constraints (nullable, unique, length)
-- Relaciones: @OneToMany, @ManyToOne con fetch = LAZY
-- Constructor vacío (requerido por JPA)
-- Getters y setters públicos
-
-Mapeo con tablas de schema.sql:
-- UnitOfMeasurementEntity -> units_of_measurement
-- InputEntity -> inputs
-- RecipeEntity -> recipes
-- IngredientEntity -> ingredients
-- ProductEntity -> products
-
-Referencia: CODING_STANDARDS.md - sección Entidades JPA
-
----
-
-### TICKET-017: Crear InputEntityMapper
-**Dependencias:** TICKET-002, TICKET-016  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/mapper/InputEntityMapper.java`
-
-**Descripción:**
-Crear mapper que convierte:
-- Input (dominio) -> InputEntity (para guardar)
-- InputEntity -> Input (dominio) (al recuperar)
-
-Referencia: CODING_STANDARDS.md - sección EntityMapper
-
----
-
-### TICKET-018: Crear IngredientEntityMapper
-**Dependencias:** TICKET-003, TICKET-016, TICKET-017  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/mapper/IngredientEntityMapper.java`
-
-**Descripción:**
-Crear mapper que convierte:
-- Ingredient (dominio) -> IngredientEntity
-- IngredientEntity -> Ingredient (dominio)
-
----
-
-### TICKET-019: Crear RecipeEntityMapper
-**Dependencias:** TICKET-004, TICKET-016, TICKET-018  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/mapper/RecipeEntityMapper.java`
-
-**Descripción:**
-Crear mapper que convierte:
-- Recipe (dominio) -> RecipeEntity
-- RecipeEntity -> Recipe (dominio)
-
-Nota: Manejar la lista de ingredientes correctamente.
-
----
-
-### TICKET-020: Crear ProductEntityMapper
-**Dependencias:** TICKET-005, TICKET-016, TICKET-019  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/mapper/ProductEntityMapper.java`
-
-**Descripción:**
-Crear mapper que convierte:
-- Product (dominio) -> ProductEntity
-- ProductEntity -> Product (dominio)
-
----
-
-### TICKET-021: Crear JpaRepositories
-**Dependencias:** TICKET-016  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/jpa/InputJpaRepository.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/jpa/RecipeJpaRepository.java`
-- `backend/src/main/java/com/bakery/infrastructure/persistence/jpa/ProductJpaRepository.java`
-
-**Descripción:**
-Crear interfaces que extienden JpaRepository<Entity, Integer>.
-Métodos automáticos: findAll(), save(), findById(), deleteById()
-Métodos customizados: findByName() donde sea aplicable.
-
-Referencia: CODING_STANDARDS.md - sección JpaRepository
-
----
-
-### TICKET-022: Crear InputRepositoryImpl
-**Dependencias:** TICKET-006, TICKET-017, TICKET-021  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/repository/InputRepositoryImpl.java`
-
-**Descripción:**
-Implementar IInputRepository usando InputJpaRepository e InputEntityMapper.
-Convertir Entity ↔ Dominio en cada operación.
-
-Referencia: CODING_STANDARDS.md - sección RepositoryImpl
-
----
-
-### TICKET-023: Crear RecipeRepositoryImpl
-**Dependencias:** TICKET-006, TICKET-019, TICKET-021  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/repository/RecipeRepositoryImpl.java`
-
-**Descripción:**
-Implementar IRecipeRepository usando RecipeJpaRepository e RecipeEntityMapper.
-
----
-
-### TICKET-024: Crear ProductRepositoryImpl
-**Dependencias:** TICKET-006, TICKET-020, TICKET-021  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/persistence/repository/ProductRepositoryImpl.java`
-
-**Descripción:**
-Implementar IProductRepository usando ProductJpaRepository e ProductEntityMapper.
-
----
-
-### TICKET-025: Crear CorsConfig
-**Dependencias:** Ninguna  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/infrastructure/config/CorsConfig.java`
-
-**Descripción:**
-Crear configuración CORS para permitir requests desde Angular (http://localhost:4200).
-
-```java
-@Configuration
-public class CorsConfig implements WebMvcConfigurer {
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-            .allowedOrigins("http://localhost:4200")
-            .allowedMethods("GET", "POST", "PUT", "DELETE")
-            .allowCredentials(true)
-            .maxAge(3600);
-    }
-}
-```
-
----
-
-## Web Layer Tickets
-
-### TICKET-026: Crear InputController
-**Dependencias:** TICKET-012, TICKET-007  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/web/controller/InputController.java`
-
-**Descripción:**
-Crear REST controller con endpoints:
-- POST /api/inputs (crear)
-- GET /api/inputs (listar todos)
-- GET /api/inputs/{id} (obtener uno)
-- PUT /api/inputs/{id}/price (actualizar precio)
-- DELETE /api/inputs/{id} (eliminar)
-
-Códigos HTTP: 201 CREATE, 200 OK, 204 NO CONTENT, 404 NOT FOUND
-
-Referencia: CODING_STANDARDS.md - sección Controllers
-
----
-
-### TICKET-027: Crear RecipeController
-**Dependencias:** TICKET-013, TICKET-009  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/web/controller/RecipeController.java`
-
-**Descripción:**
-Crear REST controller con endpoints:
-- POST /api/recipes (crear)
-- GET /api/recipes (listar todas)
-- GET /api/recipes/{id} (obtener una)
-- POST /api/recipes/{id}/ingredients (agregar ingrediente)
-- GET /api/recipes/{id}/cost (calcular costo)
-- DELETE /api/recipes/{id} (eliminar)
-
----
-
-### TICKET-028: Crear ProductController
-**Dependencias:** TICKET-014, TICKET-010  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/web/controller/ProductController.java`
-
-**Descripción:**
-Crear REST controller con endpoints:
-- POST /api/products (crear)
-- GET /api/products (listar todos)
-- GET /api/products/{id} (obtener uno)
-- PUT /api/products/{id}/price (actualizar precio)
-- GET /api/products/{id}/margin (obtener margen)
-- DELETE /api/products/{id} (eliminar)
-
----
-
-### TICKET-029: Crear GlobalExceptionHandler
-**Dependencias:** TICKET-015  
-**Archivos a generar:**
-- `backend/src/main/java/com/bakery/web/exception/GlobalExceptionHandler.java`
-
-**Descripción:**
-Crear manejador global de excepciones con handlers para:
-- InputNotFoundException, RecipeNotFoundException, ProductNotFoundException (404)
-- MethodArgumentNotValidException (400)
-- Excepciones genéricas (500)
-
-Referencia: CODING_STANDARDS.md - sección GlobalExceptionHandler
-
----
-
-## Configuration Tickets
-
-### TICKET-030: Configurar application.properties
-**Dependencias:** Ninguna  
-**Archivos a generar/modificar:**
-- `backend/src/main/resources/application.properties`
-
-**Descripción:**
-Configurar:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/bakery_cost_calculator
-spring.datasource.username=postgres
-spring.datasource.password=tu_password
-spring.jpa.hibernate.ddl-auto=none
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-server.port=8080
-```
-
----
-
-## Testing Tickets (Opcionales, para después)
-
-### TICKET-031: Crear tests para dominio
-### TICKET-032: Crear tests para servicios
-### TICKET-033: Crear tests para controllers
-
----
-
-## Orden de implementación recomendado
-
-1. Dominio: TICKET-001 → TICKET-005
-2. Application (mappers y DTOs): TICKET-007 → TICKET-011
-3. Application (services): TICKET-012 → TICKET-014
-4. Excepciones: TICKET-015
-5. Infrastructure (entidades y mappers): TICKET-016 → TICKET-020
-6. Infrastructure (repositories): TICKET-021 → TICKET-024
-7. Infrastructure (config): TICKET-025
-8. Configuration: TICKET-030
-9. Web: TICKET-026 → TICKET-028
-10. Exception handling: TICKET-029
-
----
-
-## Notas
-
-- Cada ticket depende de los anteriores. No saltar tickets.
-- Si un ticket falla, revisar las dependencias.
-- Los tests pueden hacerse después de completar todos los tickets funcionales.
+## Orden recomendado
+
+1. Dominio: 001 → 009
+2. Application: ports/excepciones/DTOs/mappers (010–013) → servicios (014–019)
+3. Infra: migración (020) → entidades/mappers/repos (021–024) → CORS (025)
+4. Config: 032
+5. Web: controllers (026–030) → exception handler (031)
+6. Testing: 033 → 035
+
+**Nota:** no saltar dependencias. Si un ticket falla, revisar sus dependencias.
