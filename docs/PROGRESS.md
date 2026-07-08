@@ -7,8 +7,8 @@ Trackea el progreso de desarrollo. Actualizá conforme completes cada ticket (ve
 ## Resumen
 
 **Último update:** 2026-07-08
-**Tickets completados:** 25/35
-**Etapa actual:** Infrastructure Layer completado ✅ — siguiente: Web Layer + Config (TICKET-026)
+**Tickets completados:** 32/35
+**Etapa actual:** Backend funcional completo ✅ — pendiente: tests extra (033-035), verificación con PostgreSQL real y frontend Angular
 
 Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
@@ -61,16 +61,16 @@ Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
 ## Web Layer
 
-- [ ] TICKET-026 — InputController ⏳
-- [ ] TICKET-027 — RecipeController ⏳
-- [ ] TICKET-028 — ProductController (incluye /pricing) ⏳
-- [ ] TICKET-029 — FixedCostController y EmployeeController ⏳
-- [ ] TICKET-030 — CostSettingsController ⏳
-- [ ] TICKET-031 — GlobalExceptionHandler ⏳
+- [x] TICKET-026 — InputController ✅ 2026-07-08
+- [x] TICKET-027 — RecipeController ✅ 2026-07-08
+- [x] TICKET-028 — ProductController (incluye /pricing) ✅ 2026-07-08
+- [x] TICKET-029 — FixedCostController y EmployeeController ✅ 2026-07-08 (+ GET /total en ambos)
+- [x] TICKET-030 — CostSettingsController ✅ 2026-07-08
+- [x] TICKET-031 — GlobalExceptionHandler ✅ 2026-07-08 (404/400/409/500 uniformes)
 
 ## Configuration
 
-- [ ] TICKET-032 — application.properties ⏳
+- [x] TICKET-032 — application.properties ✅ 2026-07-08 (password vía env DB_PASSWORD, ddl-auto=validate, Flyway, OSIV off)
 
 ## Testing (opcional, después)
 

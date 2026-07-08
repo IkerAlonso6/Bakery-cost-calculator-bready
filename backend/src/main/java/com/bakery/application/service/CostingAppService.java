@@ -1,5 +1,8 @@
 package com.bakery.application.service;
 
+import com.bakery.application.dto.ProductCostingDTO;
+import com.bakery.application.mapper.ProductCostingMapper;
+import com.bakery.domain.model.CostSettings;
 import com.bakery.domain.model.CostingService;
 import com.bakery.domain.model.Product;
 import com.bakery.domain.model.ProductCosting;
@@ -19,32 +22,35 @@ public class CostingAppService {
     private final FixedCostService fixedCostService;
     private final EmployeeService employeeService;
     private final CostSettingsService costSettingsService;
+    private final ProductCostingMapper productCostingMapper;
     private final CostingService costingService;
 
     public CostingAppService(ProductService productService,
                              FixedCostService fixedCostService,
                              EmployeeService employeeService,
-                             CostSettingsService costSettingsService) {
+                             CostSettingsService costSettingsService,
+                             ProductCostingMapper productCostingMapper) {
         this.productService = productService;
         this.fixedCostService = fixedCostService;
         this.employeeService = employeeService;
         this.costSettingsService = costSettingsService;
+        this.productCostingMapper = productCostingMapper;
         this.costingService = new CostingService();
     }
 
-    /** Costeo completo de un producto (desglose, precio sugerido, margen real). */
-    public ProductCosting getProductCosting(Integer productId) {
+    /**
+     * Costeo completo de un producto listo para la capa web:
+     * desglose de costos, precio sugerido, margen real y moneda.
+     */
+    public ProductCostingDTO getProductPricing(Integer productId) {
         Product product = productService.getProductById(productId);
-        return costingService.calculate(
+        CostSettings settings = costSettingsService.getSettings();
+        ProductCosting costing = costingService.calculate(
                 product,
                 fixedCostService.getAllFixedCosts(),
                 employeeService.getAllEmployees(),
-                costSettingsService.getSettings()
+                settings
         );
-    }
-
-    /** Producto asociado (para armar la respuesta enriquecida en la capa web). */
-    public Product getProduct(Integer productId) {
-        return productService.getProductById(productId);
+        return productCostingMapper.toDto(product, costing, settings.getCurrency());
     }
 }
