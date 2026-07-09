@@ -1,0 +1,465 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Catálogo de Productos - Panadero Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Literata:wght@400;600;700&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#54433a",
+                    "loss-red": "#BC4749",
+                    "surface-container-high": "#dce9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#0d1c2e",
+                    "on-secondary-container": "#745c00",
+                    "secondary": "#735c00",
+                    "primary-container": "#8b4513",
+                    "on-surface": "#0d1c2e",
+                    "on-primary-fixed-variant": "#753401",
+                    "surface-dim": "#ccdbf3",
+                    "surface": "#f8f9ff",
+                    "on-tertiary-fixed": "#1d1d03",
+                    "secondary-fixed": "#ffe088",
+                    "primary-fixed": "#ffdbc9",
+                    "tertiary": "#424223",
+                    "surface-container-highest": "#d5e3fc",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#ffc29f",
+                    "inverse-primary": "#ffb68c",
+                    "on-tertiary-container": "#d3d1a7",
+                    "outline-variant": "#dac2b6",
+                    "inverse-surface": "#233144",
+                    "surface-container-low": "#eff4ff",
+                    "surface-variant": "#d5e3fc",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary": "#6c2f00",
+                    "surface-tint": "#934b19",
+                    "on-tertiary-fixed-variant": "#484828",
+                    "indicator-mint": "#D8F3DC",
+                    "primary-fixed-dim": "#ffb68c",
+                    "on-secondary-fixed-variant": "#574500",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#321200",
+                    "profit-green": "#2D6A4F",
+                    "tertiary-container": "#5a5a38",
+                    "error": "#ba1a1a",
+                    "outline": "#877369",
+                    "surface-container": "#e6eeff",
+                    "secondary-container": "#fed65b",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#cac99f",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-cream": "#FAF9F6",
+                    "tertiary-fixed": "#e6e5b9",
+                    "background": "#f8f9ff",
+                    "surface-bright": "#f8f9ff",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#e9c349"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "32px",
+                    "container-max-width": "1280px",
+                    "unit": "8px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Hanken Grotesk"],
+                    "data-mono": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Literata"],
+                    "label-md": ["Hanken Grotesk"],
+                    "headline-sm": ["Literata"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Literata"],
+                    "headline-lg": ["Literata"],
+                    "label-sm": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["16px", {"lineHeight": "24px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["13px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FAF9F6; /* surface-cream */
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .product-card {
+            box-shadow: 0 4px 12px rgba(108, 47, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108, 47, 0, 0.08);
+        }
+        .glass-header {
+            background: rgba(250, 249, 246, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen sticky top-0 p-4 gap-2 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant/10 w-64 z-50">
+<div class="mb-8 px-4 py-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bakery_dining</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Panadero Pro</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant/70 uppercase tracking-widest">Master Baker Tools</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Insumos</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-body-md text-body-md">Recetas</span>
+</a>
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg px-4 py-3 transition-all active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bakery_dining</span>
+<span class="font-body-md text-body-md font-bold">Productos</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg mb-4 flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                Nuevo Cálculo
+            </button>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg text-loss-red" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center px-gutter py-4 w-full max-w-container-max-width mx-auto shadow-sm bg-surface-cream dark:bg-inverse-surface z-40 sticky top-0 md:relative">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">Catálogo de Productos</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-4 border-r border-outline-variant/30 pr-6">
+<span class="font-label-md text-label-md text-on-surface-variant/60">PRODUCTOS ACTIVOS: <span class="text-primary font-bold">24</span></span>
+<span class="font-label-md text-label-md text-on-surface-variant/60">MARGEN PROMEDIO: <span class="text-profit-green font-bold">42%</span></span>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-80 transition-opacity active:scale-95">
+                    Quick Add
+                </button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-secondary-container">
+<img alt="Chef Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a master pastry chef in a clean white chef's jacket with gold embroidery. The chef has a friendly, expert expression, set against a blurred background of a modern sun-lit bakery. High-quality commercial lighting with warm golden tones consistent with a premium food brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQzvVIAJLnsYx-5ILCbnToDwwDfdBPwBFwCE_qetB9tgoqium2xv-WycKswUHuUKmNNrdU2RlqyJzxatHYMeDJW5aRgeicaRzVWgU1bF1kAyK9XexEGO3h89oFlzh7oe1gMIg4-aPI-e09tanossb003625ETYDb5ZEq1hbynMIi37yjyzTgaElEvjqfBwrpV8p_IYgW7lGHkZNc-dwmZIKBalKnE3QVoFf3623ong68IvlDDNM4Zrr5xLvTqifFjEFXGQZ_Ah9eY">
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-gutter max-w-container-max-width mx-auto w-full">
+<!-- Filters & Search Bar -->
+<div class="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant/30 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none font-body-md text-body-md" placeholder="Buscar producto o receta..." type="text">
+</div>
+<div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+<button class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md whitespace-nowrap">Todos</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant border border-outline-variant/30 rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Panadería</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant border border-outline-variant/30 rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Pastelería</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant border border-outline-variant/30 rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Gourmet</button>
+</div>
+</div>
+<!-- Bento Grid of Products -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Product Card: Croissant -->
+<div class="product-card bg-white rounded-xl overflow-hidden border border-outline-variant/10 flex flex-col">
+<div class="h-48 relative overflow-hidden group">
+<img alt="Croissant" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A macro close-up photograph of a perfectly flaky, golden-brown butter croissant resting on a rustic wooden board. The lighting is soft morning sunlight, highlighting the delicate layers of pastry and a dusting of flour. The overall mood is warm and artisanal, following a high-end bakery style with shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUU10jfTOHvjuJVtPUW9u-nVocbcD5daAjtqdm9XlIZFaCWoIr4Amn5tMKoe7xSy7Cep0e9x11CIOxI6Ls5ytKLw_YbJ4j6sy27N-L0omJWaoQl25Vqbx5R76RDSBUMHCd_J5HAlD59YTMbCZbqPGEqJ6wus4KtRPGuB92ly_xpp6Yl70EQHD4mu7wzROZwRcaXM5PBsawk5msPlaqzXVvXOXy1cuB6L3wAajLxgIMo-nSRs83paeht9ytWc4xPivtaRC-9_JU0eM">
+<div class="absolute top-4 right-4 bg-indicator-mint text-profit-green px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                            45% Margen
+                        </div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Croissant de Mantequilla</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                    Receta: Masa Hojaldrada Base
+                                </p>
+</div>
+<button class="text-on-surface-variant/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 my-6">
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Peso / Unidad</p>
+<p class="font-data-mono text-data-mono text-on-surface">85 g</p>
+</div>
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Costo Prod.</p>
+<p class="font-data-mono text-data-mono text-on-surface">$0.65</p>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">PRECIO VENTA</p>
+<p class="font-headline-md text-headline-md text-primary font-bold">$1.20</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card: Pan de Campo -->
+<div class="product-card bg-white rounded-xl overflow-hidden border border-outline-variant/10 flex flex-col">
+<div class="h-48 relative overflow-hidden group">
+<img alt="Pan de Campo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A rustic sourdough loaf with a beautifully scored crust, dusted with flour, sitting in a wicker bread basket lined with a linen cloth. The background is a clean, modern kitchen with warm wood accents and soft ambient light. The image captures the tactile quality of the bread's texture in a professional, artisanal photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeCd5jYO0SNUCjjNX66ZKVYbtdHrBP67H-_eyelT3p5MHQSgKlqDv57uwb0PiHYmjSXm5H4E0w7Czc3ijupZH7NoVvh-CrfflubWKRrES8tIVESLUp_yRl5n2GOSxoE_VUsHWJ7VOm8dgfzvq8cIsYLljje80DshzdqadleikWZNCWOXwSDqSLmPG20jz7wqmYCmFC335Y_m10QdqXcY5CWIwPy2OusMW3Rtl0FuKhqkN6AMKyLwWsy36GAqb1mbflG3Vj5TN4J4M">
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">trending_flat</span>
+                            28% Margen
+                        </div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Pan de Campo Sourdough</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                    Receta: Masa Madre Centeno
+                                </p>
+</div>
+<button class="text-on-surface-variant/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 my-6">
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Peso / Unidad</p>
+<p class="font-data-mono text-data-mono text-on-surface">500 g</p>
+</div>
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Costo Prod.</p>
+<p class="font-data-mono text-data-mono text-on-surface">$2.80</p>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">PRECIO VENTA</p>
+<p class="font-headline-md text-headline-md text-primary font-bold">$3.90</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card: Pain au Chocolat -->
+<div class="product-card bg-white rounded-xl overflow-hidden border border-outline-variant/10 flex flex-col">
+<div class="h-48 relative overflow-hidden group">
+<img alt="Pain au Chocolat" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A tempting Pain au Chocolat pastry with glossy chocolate sticks peeking through buttery, golden layers of dough. Shot in a bright, airy studio setting with soft side lighting that emphasizes the crisp texture. The color palette is rich with chocolate browns and warm pastry golds, reflecting a modern, high-end cafe aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzZ4ZR0GBVw0qscBwgl5JzvDGvPE4-_8eYxUy0zW0-ymQrfELLfJAfCgSxLy8M42UlhXZ9YAEY-og5yyoliugXQM4AbwinGFw84Y_eR_KnCCsF3w-CODjIP-1fZu7Ai1GKreJwf-EVONaGDPslnaw4sWan8JlYnbpvrimiAVXk9E4st11wUUxwautVleIj1H1ri6xPPMWqF-YMRzcHVEWDnfIo9Xk9sd_UI0ZFC8TsviVtnqfIpE1dwUAurwghhsm5EGtnqSruHQ0">
+<div class="absolute top-4 right-4 bg-red-100 text-loss-red px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+                            12% Margen
+                        </div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Pain au Chocolat</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                    Receta: Masa Hojaldrada Base
+                                </p>
+</div>
+<button class="text-on-surface-variant/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 my-6">
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Peso / Unidad</p>
+<p class="font-data-mono text-data-mono text-on-surface">90 g</p>
+</div>
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Costo Prod.</p>
+<p class="font-data-mono text-data-mono text-on-surface">$1.35</p>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">PRECIO VENTA</p>
+<p class="font-headline-md text-headline-md text-primary font-bold">$1.55</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card: Baguette -->
+<div class="product-card bg-white rounded-xl overflow-hidden border border-outline-variant/10 flex flex-col">
+<div class="h-48 relative overflow-hidden group">
+<img alt="Baguette" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Traditional long French baguettes with a crispy, golden-brown crust leaning against a white tiled wall in a professional kitchen. The lighting is clean and bright, showcasing the sharp cuts on the crust and the artisanal quality of the bread. The aesthetic is clean, minimalist, and very professional, with a focus on high-quality ingredients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9GXIZNl9OA6wfTJFDzn8MxF84FcYngvejt1veDdoRWk95IxkTFgKhaSca1LJC6pf3wkJ3hqZDNT944vypa22fB_xYO8j7SRSr74dtMm1ZPxN9YXL4MF8raxfP9EYb2gG6zDNpqQ0ImYvFv2ylaUIq2tu6qgR_x71mrskwWEO7diy13cbE0kQqtmmXN_bdTIS_R4ECzIQHcnNXq9ag5XxlVp6fcMcjMchdjoIybPR9_mt1VKFnShvKu678vxADHJsfqw04cc4wq1Q">
+<div class="absolute top-4 right-4 bg-indicator-mint text-profit-green px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                            52% Margen
+                        </div>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Baguette Tradicional</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                    Receta: Masa Baguette Paris
+                                </p>
+</div>
+<button class="text-on-surface-variant/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 my-6">
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Peso / Unidad</p>
+<p class="font-data-mono text-data-mono text-on-surface">250 g</p>
+</div>
+<div class="bg-surface-cream p-3 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Costo Prod.</p>
+<p class="font-data-mono text-data-mono text-on-surface">$0.42</p>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">PRECIO VENTA</p>
+<p class="font-headline-md text-headline-md text-primary font-bold">$0.88</p>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Add Product Placeholder -->
+<div class="product-card bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center p-12 text-center group cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">add</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Nuevo Producto</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant/60 max-w-[200px]">Crea un nuevo producto vinculado a tus recetas para calcular márgenes.</p>
+</div>
+</div>
+</div>
+<!-- Footer for Summary (Desktop) -->
+<footer class="mt-auto p-gutter hidden lg:block">
+<div class="bg-white rounded-xl p-6 border border-outline-variant/10 shadow-sm flex items-center justify-between">
+<div class="flex gap-12">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Valor Total Inventario Est.</p>
+<p class="font-headline-md text-headline-md text-on-surface font-bold">$4,250.00</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Costo de Producción Diario</p>
+<p class="font-headline-md text-headline-md text-on-surface font-bold">$840.50</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Rendimiento Operativo</p>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-profit-green font-bold">+18.5%</span>
+<span class="material-symbols-outlined text-profit-green">trending_up</span>
+</div>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md text-label-md shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all">
+                    Exportar Lista de Precios
+                </button>
+</div>
+</footer>
+</main>
+<!-- Mobile Bottom NavBar (Shared Component Logic) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50 px-gutter py-3 flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant/60" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-sm">Inicio</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant/60" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-[10px] font-label-sm">Insumos</span>
+</a>
+<div class="relative -top-6">
+<button class="bg-primary text-on-primary w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bakery_dining</span>
+<span class="text-[10px] font-label-sm font-bold">Catálogo</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant/60" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-sm">Perfil</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interaction for buttons
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-95');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+    </script>
+</body></html>
