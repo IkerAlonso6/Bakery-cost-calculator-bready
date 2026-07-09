@@ -2,3 +2,9 @@
 .vscode/
 .idea/
 *.swp
+
+# Frontend (Angular) — el .gitignore propio de frontend/ ya cubre esto,
+# se declara también acá por claridad.
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
