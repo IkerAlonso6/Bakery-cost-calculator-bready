@@ -1,0 +1,27 @@
+.summary-row {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.summary-card {
+  flex: 1;
+  max-width: 220px;
+}
+
+.summary-label {
+  opacity: 0.7;
+  margin: 0;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 4px 0 0;
+}
+
+.info-banner mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

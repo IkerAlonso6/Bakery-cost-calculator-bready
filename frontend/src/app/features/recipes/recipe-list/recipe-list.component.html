@@ -1,0 +1,47 @@
+<div class="page-header">
+  <h1>Recetas</h1>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Agregar receta
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else {
+  <div class="card-grid">
+    @for (recipe of recipes(); track recipe.id) {
+      <mat-card class="entity-card clickable" (click)="viewDetail(recipe)">
+        <mat-card-content>
+          <div class="entity-card-top">
+            <span class="unit-badge">{{ recipe.ingredients.length }} ingredientes</span>
+            <button mat-icon-button matTooltip="Eliminar" (click)="delete(recipe, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <h3 class="entity-card-title">{{ recipe.name }}</h3>
+          <p class="entity-card-subtitle">
+            <mat-icon>scale</mat-icon>
+            Rinde {{ recipe.yieldQuantity }} {{ recipe.yieldUnit | unitSymbol }}
+          </p>
+
+          <div class="entity-card-footer">
+            <span class="stat-label">Ver ingredientes y costo</span>
+            <mat-icon class="entity-card-chevron">chevron_right</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="add-tile" (click)="openCreateDialog()">
+      <div class="add-tile-icon">
+        <mat-icon>add</mat-icon>
+      </div>
+      <h3 class="entity-card-title">Nueva Receta</h3>
+      <p class="empty-state">Definí una receta con su rendimiento para calcular costos.</p>
+    </div>
+  </div>
+}

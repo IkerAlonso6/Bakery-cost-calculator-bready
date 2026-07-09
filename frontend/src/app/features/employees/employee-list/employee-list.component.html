@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>Empleados</h1>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Agregar empleado
+  </button>
+</div>
+
+@if (total(); as t) {
+  <mat-card class="total-card">
+    <mat-card-content>Total mensual (L): {{ t }}</mat-card-content>
+  </mat-card>
+}
+
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else if (employees().length === 0) {
+  <p class="empty-state">Todavía no cargaste ningún empleado.</p>
+} @else {
+  <table mat-table [dataSource]="employees()" class="data-table">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="monthlySalary">
+      <th mat-header-cell *matHeaderCellDef>Sueldo mensual</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.monthlySalary }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="monthlyHours">
+      <th mat-header-cell *matHeaderCellDef>Horas mensuales</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.monthlyHours ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="costPerHour">
+      <th mat-header-cell *matHeaderCellDef>Costo/hora</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.costPerHour ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let employee">
+        <button mat-icon-button (click)="openEditDialog(employee)" matTooltip="Editar">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="delete(employee)" matTooltip="Eliminar">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+}

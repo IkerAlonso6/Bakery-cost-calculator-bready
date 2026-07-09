@@ -1,0 +1,75 @@
+<h1>Dashboard</h1>
+
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else {
+  <div class="summary-row">
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <p class="summary-label">Costos fijos (F)</p>
+        <p class="summary-value">{{ fixedTotal() }}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <p class="summary-label">Sueldos (L)</p>
+        <p class="summary-value">{{ employeeTotal() }}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <p class="summary-label">Productos</p>
+        <p class="summary-value">{{ products().length }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (costingUnavailable()) {
+    <mat-card class="info-banner">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <span>Todavía no configuraste el costeo del negocio. Configuralo para ver la rentabilidad de tus productos.</span>
+        <button mat-button color="primary" (click)="goToCostSettings()">Configurar ahora</button>
+      </mat-card-content>
+    </mat-card>
+  } @else if (pricings().length > 0) {
+    <table mat-table [dataSource]="pricings()" class="data-table">
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef>Producto</th>
+        <td mat-cell *matCellDef="let p">{{ p.productName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalCost">
+        <th mat-header-cell *matHeaderCellDef>Costo total</th>
+        <td mat-cell *matCellDef="let p">{{ p.totalCost }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="appliedMargin">
+        <th mat-header-cell *matHeaderCellDef>Margen aplicado</th>
+        <td mat-cell *matCellDef="let p">{{ (p.appliedMargin * 100).toFixed(2) }}%</td>
+      </ng-container>
+
+      <ng-container matColumnDef="suggestedPrice">
+        <th mat-header-cell *matHeaderCellDef>Precio sugerido</th>
+        <td mat-cell *matCellDef="let p">{{ p.suggestedPrice }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Precio actual</th>
+        <td mat-cell *matCellDef="let p">{{ p.price ?? '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="realMargin">
+        <th mat-header-cell *matHeaderCellDef>Margen real</th>
+        <td mat-cell *matCellDef="let p">{{ p.realMargin !== null ? (p.realMargin * 100).toFixed(2) + '%' : '—' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  } @else {
+    <p class="empty-state">Todavía no cargaste ningún producto.</p>
+  }
+}

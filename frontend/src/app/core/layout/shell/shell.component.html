@@ -1,0 +1,46 @@
+@if (isHandset()) {
+  <mat-toolbar color="primary" class="shell-toolbar">
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="shell-toolbar-title">Bakery Cost Calculator</span>
+  </mat-toolbar>
+}
+
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="isHandset() ? 'over' : 'side'"
+    [opened]="!isHandset()"
+    class="shell-sidenav"
+  >
+    <div class="shell-brand">
+      <div class="shell-brand-badge">
+        <mat-icon class="icon-filled">bakery_dining</mat-icon>
+      </div>
+      <div>
+        <h2 class="shell-brand-title">Bakery Cost Calculator</h2>
+        <p class="shell-brand-subtitle">Costeo &amp; rentabilidad</p>
+      </div>
+    </div>
+
+    <mat-nav-list class="shell-nav">
+      @for (item of navItems; track item.path) {
+        <a
+          mat-list-item
+          [routerLink]="item.path"
+          routerLinkActive="active-nav-item"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="isHandset() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell-content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

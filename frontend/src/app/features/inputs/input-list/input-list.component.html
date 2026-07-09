@@ -1,0 +1,53 @@
+<div class="page-header">
+  <h1>Insumos</h1>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Agregar insumo
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else {
+  <div class="card-grid">
+    @for (input of inputs(); track input.id) {
+      <mat-card class="entity-card">
+        <mat-card-content>
+          <div class="entity-card-top">
+            <span class="unit-badge">{{ input.unitOfMeasure | unitSymbol }}</span>
+            <button mat-icon-button matTooltip="Eliminar" (click)="delete(input)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <h3 class="entity-card-title">{{ input.name }}</h3>
+
+          <div class="entity-card-footer">
+            <div>
+              <p class="stat-label">Precio</p>
+              <p class="entity-card-price">{{ input.price }}</p>
+            </div>
+            <button
+              mat-icon-button
+              class="entity-card-edit-btn"
+              matTooltip="Editar precio"
+              (click)="openEditDialog(input)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="add-tile" (click)="openCreateDialog()">
+      <div class="add-tile-icon">
+        <mat-icon>add</mat-icon>
+      </div>
+      <h3 class="entity-card-title">Nuevo Insumo</h3>
+      <p class="empty-state">Cargá un insumo para usarlo en tus recetas.</p>
+    </div>
+  </div>
+}

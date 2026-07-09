@@ -1,0 +1,25 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.info-banner mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inline-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}

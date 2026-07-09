@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Nuevo producto</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="form-content">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" />
+      @if (form.controls.name.hasError('required')) {
+        <mat-error>El nombre es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Receta</mat-label>
+      <mat-select formControlName="recipeId">
+        @for (recipe of recipes(); track recipe.id) {
+          <mat-option [value]="recipe.id">{{ recipe.name }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.recipeId.hasError('required')) {
+        <mat-error>Elegí una receta</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" [mat-dialog-close]="undefined">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit">Guardar</button>
+  </mat-dialog-actions>
+</form>

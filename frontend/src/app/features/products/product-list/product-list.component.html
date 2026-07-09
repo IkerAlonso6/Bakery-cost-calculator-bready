@@ -1,0 +1,70 @@
+<div class="page-header">
+  <h1>Productos</h1>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Agregar producto
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else {
+  <div class="product-grid">
+    @for (card of cards(); track card.product.id) {
+      <mat-card class="product-card" (click)="viewDetail(card.product)">
+        <mat-card-content>
+          <div class="product-card-top">
+            <span class="badge" [class]="marginBadgeClass(card.costing)">
+              <mat-icon class="icon-filled">{{ marginBadgeIcon(card.costing) }}</mat-icon>
+              @if (card.costing) {
+                {{ ((card.costing.realMargin ?? card.costing.appliedMargin) * 100).toFixed(0) }}% Margen
+              } @else {
+                Sin costeo
+              }
+            </span>
+            <button mat-icon-button matTooltip="Eliminar" (click)="delete(card.product, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <h3 class="product-card-title">{{ card.product.name }}</h3>
+          <p class="product-card-subtitle">
+            <mat-icon>menu_book</mat-icon>
+            Receta: {{ card.product.recipeName }}
+          </p>
+
+          <div class="product-card-stats">
+            <div class="stat-tile">
+              <p class="stat-label">Costo materiales</p>
+              <p class="stat-value">{{ card.costing?.materialCost ?? '—' }}</p>
+            </div>
+            <div class="stat-tile">
+              <p class="stat-label">Costo total</p>
+              <p class="stat-value">{{ card.costing?.totalCost ?? '—' }}</p>
+            </div>
+          </div>
+
+          <div class="product-card-footer">
+            <div>
+              <p class="stat-label">Precio venta</p>
+              <p class="product-card-price">{{ card.product.price ?? card.costing?.suggestedPrice ?? '—' }}</p>
+            </div>
+            <button mat-icon-button class="edit-button" matTooltip="Ver / editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="product-card product-card-add" (click)="openCreateDialog()">
+      <div class="product-card-add-icon">
+        <mat-icon>add</mat-icon>
+      </div>
+      <h3 class="product-card-title">Nuevo Producto</h3>
+      <p class="empty-state">Creá un nuevo producto vinculado a tus recetas para calcular márgenes.</p>
+    </div>
+  </div>
+}

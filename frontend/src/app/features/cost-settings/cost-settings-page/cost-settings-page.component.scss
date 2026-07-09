@@ -1,0 +1,29 @@
+.loading-row {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.info-banner {
+  margin-bottom: 16px;
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.settings-card {
+  max-width: 480px;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  button {
+    align-self: flex-start;
+    margin-top: 8px;
+  }
+}

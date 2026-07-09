@@ -1,0 +1,385 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+// ---------------------------------------------------------------------------
+// "Artisan Harvest" design system (docs/design/stitch-diseño-Bakery-cost-calculator)
+// Warm bakery aesthetic: Warm Wood primary, Gold/Wheat secondary, Cream surfaces,
+// Literata serif headlines + Hanken Grotesk sans body/data.
+// ---------------------------------------------------------------------------
+
+html {
+  height: 100%;
+
+  // Base M3 theme (state layers, elevation, base typography structure); the
+  // exact color/typography/shape tokens are overridden below with the values
+  // from DESIGN.md so every Material component picks up the bakery palette.
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // --- Color tokens (docs/design/.../DESIGN.md front-matter `colors:`) ---
+  --mat-sys-surface: #f8f9ff;
+  --mat-sys-surface-dim: #ccdbf3;
+  --mat-sys-surface-bright: #f8f9ff;
+  --mat-sys-surface-container-lowest: #ffffff;
+  --mat-sys-surface-container-low: #eff4ff;
+  --mat-sys-surface-container: #e6eeff;
+  --mat-sys-surface-container-high: #dce9ff;
+  --mat-sys-surface-container-highest: #d5e3fc;
+  --mat-sys-on-surface: #0d1c2e;
+  --mat-sys-on-surface-variant: #54433a;
+  --mat-sys-inverse-surface: #233144;
+  --mat-sys-inverse-on-surface: #eaf1ff;
+  --mat-sys-outline: #877369;
+  --mat-sys-outline-variant: #dac2b6;
+  --mat-sys-surface-tint: #934b19;
+  --mat-sys-primary: #6c2f00;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #8b4513;
+  --mat-sys-on-primary-container: #ffc29f;
+  --mat-sys-inverse-primary: #ffb68c;
+  --mat-sys-secondary: #735c00;
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-secondary-container: #fed65b;
+  --mat-sys-on-secondary-container: #745c00;
+  --mat-sys-tertiary: #424223;
+  --mat-sys-on-tertiary: #ffffff;
+  --mat-sys-tertiary-container: #5a5a38;
+  --mat-sys-on-tertiary-container: #d3d1a7;
+  --mat-sys-error: #ba1a1a;
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-error-container: #ffdad6;
+  --mat-sys-on-error-container: #93000a;
+  --mat-sys-primary-fixed: #ffdbc9;
+  --mat-sys-primary-fixed-dim: #ffb68c;
+  --mat-sys-on-primary-fixed: #321200;
+  --mat-sys-on-primary-fixed-variant: #753401;
+  --mat-sys-secondary-fixed: #ffe088;
+  --mat-sys-secondary-fixed-dim: #e9c349;
+  --mat-sys-on-secondary-fixed: #241a00;
+  --mat-sys-on-secondary-fixed-variant: #574500;
+  --mat-sys-tertiary-fixed: #e6e5b9;
+  --mat-sys-tertiary-fixed-dim: #cac99f;
+  --mat-sys-on-tertiary-fixed: #1d1d03;
+  --mat-sys-on-tertiary-fixed-variant: #484828;
+  --mat-sys-background: #f8f9ff;
+  --mat-sys-on-background: #0d1c2e;
+  --mat-sys-surface-variant: #d5e3fc;
+
+  // --- Typography: Literata (serif) for headlines/titles, Hanken Grotesk for body/labels/data ---
+  --mat-sys-display-large-font: 'Literata', serif;
+  --mat-sys-display-medium-font: 'Literata', serif;
+  --mat-sys-display-small-font: 'Literata', serif;
+  --mat-sys-headline-large-font: 'Literata', serif;
+  --mat-sys-headline-medium-font: 'Literata', serif;
+  --mat-sys-headline-small-font: 'Literata', serif;
+  --mat-sys-title-large-font: 'Literata', serif;
+  --mat-sys-title-medium-font: 'Literata', serif;
+  --mat-sys-title-small-font: 'Literata', serif;
+  --mat-sys-body-large-font: 'Hanken Grotesk', sans-serif;
+  --mat-sys-body-medium-font: 'Hanken Grotesk', sans-serif;
+  --mat-sys-body-small-font: 'Hanken Grotesk', sans-serif;
+  --mat-sys-label-large-font: 'Hanken Grotesk', sans-serif;
+  --mat-sys-label-medium-font: 'Hanken Grotesk', sans-serif;
+  --mat-sys-label-small-font: 'Hanken Grotesk', sans-serif;
+
+  // --- Shape: rounded "friendly cafe" language (docs DESIGN.md `rounded:`) ---
+  --mat-sys-corner-extra-small: 4px;
+  --mat-sys-corner-small: 4px;
+  --mat-sys-corner-medium: 8px;
+  --mat-sys-corner-large: 16px;
+  --mat-sys-corner-extra-large: 24px;
+
+  // --- Brand extras not part of the M3 token set ---
+  --brand-profit-green: #2d6a4f;
+  --brand-loss-red: #bc4749;
+  --brand-indicator-mint: #d8f3dc;
+  --brand-surface-cream: #faf9f6;
+  --brand-font-headline: 'Literata', serif;
+  --brand-font-body: 'Hanken Grotesk', sans-serif;
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  background-color: var(--brand-surface-cream);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+.mat-mdc-card-title,
+mat-card-title {
+  font-family: var(--brand-font-headline);
+  color: var(--mat-sys-primary);
+  font-weight: 700;
+}
+
+/* You can add global styles to this file, and also import other style files */
+
+.icon-filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+// Cards: pure white surface + soft warm-tinted ambient shadow (DESIGN.md "Elevation & Depth")
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: var(--mat-sys-surface-container-lowest);
+  background-color: var(--mat-sys-surface-container-lowest) !important;
+  box-shadow: 0 4px 12px rgba(108, 47, 0, 0.05) !important;
+  border: 1px solid rgba(135, 115, 105, 0.1);
+}
+
+/* Utilidades compartidas por las pantallas de listado (Insumos, Recetas, Productos, Costos Fijos, Empleados) */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.loading-row {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.empty-state {
+  opacity: 0.7;
+}
+
+.data-table {
+  width: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+  border-radius: var(--mat-sys-corner-large);
+  overflow: hidden;
+
+  // Alternating cream/white row colors (DESIGN.md "Lists & Data Tables")
+  tr.mat-mdc-row:nth-child(odd) {
+    background-color: var(--brand-surface-cream);
+  }
+
+  th.mat-mdc-header-cell {
+    font-family: var(--brand-font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(84, 67, 58, 0.6);
+  }
+
+  td.mat-mdc-cell,
+  th.mat-mdc-header-cell {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
+
+.total-card {
+  margin-bottom: 16px;
+  max-width: 320px;
+}
+
+// Pill-shaped status badges (profit/loss), DESIGN.md "Status Badges & Unit Chips"
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--mat-sys-corner-full);
+  font-family: var(--brand-font-body);
+  font-size: 13px;
+  font-weight: 700;
+
+  .material-icons {
+    font-size: 16px;
+  }
+}
+
+.badge-profit {
+  background-color: var(--brand-indicator-mint);
+  color: var(--brand-profit-green);
+}
+
+.badge-loss {
+  background-color: #ffe2e2;
+  color: var(--brand-loss-red);
+}
+
+.badge-neutral {
+  background-color: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+// Small neutral pill for units of measurement (DESIGN.md "Unit Badge")
+.unit-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  background-color: rgba(84, 67, 58, 0.08);
+  color: var(--mat-sys-on-surface-variant);
+  font-family: var(--brand-font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+// Shared "bento" card-grid treatment for entity listings (Insumos, Recetas, Costos Fijos).
+// Productos usa su propia variante (product-list.component.scss) por sus badges de margen.
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.entity-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.entity-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  margin-bottom: 8px;
+}
+
+.entity-card-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.entity-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 16px;
+  color: rgba(84, 67, 58, 0.7);
+  font-size: 14px;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.entity-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.entity-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(135, 115, 105, 0.15);
+}
+
+.entity-card-price {
+  font-family: var(--brand-font-headline);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+  margin: 0;
+}
+
+.entity-card-edit-btn {
+  border: 1px solid var(--mat-sys-secondary);
+  color: var(--mat-sys-secondary);
+}
+
+.entity-card-chevron {
+  color: var(--mat-sys-secondary);
+}
+
+// Dashed "add new" placeholder tile, same slot size as a regular entity card.
+.add-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+  background-color: var(--mat-sys-surface-container-low) !important;
+  border: 2px dashed rgba(135, 115, 105, 0.3) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.add-tile-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--mat-sys-corner-full);
+  background-color: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+// Small stat tile used inside cards (peso/unidad, costo prod., etc.)
+.stat-tile {
+  background-color: var(--brand-surface-cream);
+  border-radius: var(--mat-sys-corner-medium);
+  padding: 12px;
+
+  .stat-label {
+    font-family: var(--brand-font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(84, 67, 58, 0.6);
+    margin: 0 0 4px;
+  }
+
+  .stat-value {
+    font-family: var(--brand-font-body);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+}

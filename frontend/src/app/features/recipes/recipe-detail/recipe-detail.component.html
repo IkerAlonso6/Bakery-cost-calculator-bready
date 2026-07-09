@@ -1,0 +1,75 @@
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else if (recipe(); as r) {
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ r.name }}</h1>
+  </div>
+
+  <div class="detail-layout">
+    <mat-card class="summary-card">
+      <mat-card-header>
+        <mat-card-title>Resumen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Rendimiento: {{ r.yieldQuantity }} {{ r.yieldUnit | unitSymbol }}</p>
+        <p>Costo de materiales por unidad: {{ cost() }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="ingredients-card">
+      <mat-card-header>
+        <mat-card-title>Ingredientes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (r.ingredients.length === 0) {
+          <p class="empty-state">Todavía no agregaste ingredientes.</p>
+        } @else {
+          <table mat-table [dataSource]="r.ingredients" class="data-table">
+            <ng-container matColumnDef="inputName">
+              <th mat-header-cell *matHeaderCellDef>Insumo</th>
+              <td mat-cell *matCellDef="let ingredient">{{ ingredient.inputName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+              <td mat-cell *matCellDef="let ingredient">{{ ingredient.quantity }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="cost">
+              <th mat-header-cell *matHeaderCellDef>Costo</th>
+              <td mat-cell *matCellDef="let ingredient">{{ ingredient.cost }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="addIngredient()" class="add-ingredient-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Insumo</mat-label>
+            <mat-select formControlName="inputId">
+              @for (input of availableInputs(); track input.id) {
+                <mat-option [value]="input.id">{{ input.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" step="0.0001" formControlName="quantity" />
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" [disabled]="adding()">
+            Agregar ingrediente
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

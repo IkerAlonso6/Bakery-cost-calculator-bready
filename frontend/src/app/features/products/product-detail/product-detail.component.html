@@ -1,0 +1,72 @@
+@if (loading()) {
+  <div class="loading-row">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+} @else if (product(); as p) {
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ p.name }}</h1>
+  </div>
+
+  <div class="detail-layout">
+    @if (costingUnavailable()) {
+      <mat-card class="info-banner">
+        <mat-card-content>
+          <mat-icon>info</mat-icon>
+          <span>Todavía no configuraste el costeo del negocio.</span>
+          <button mat-button color="primary" (click)="goToCostSettings()">Configurar ahora</button>
+        </mat-card-content>
+      </mat-card>
+    } @else if (pricing(); as costing) {
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Costeo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Materiales: {{ costing.materialCost }}</p>
+          <p>Mano de obra: {{ costing.laborCost }}</p>
+          <p>Costos fijos: {{ costing.fixedCost }}</p>
+          <p>Costo total: {{ costing.totalCost }}</p>
+          <p>Margen aplicado: {{ (costing.appliedMargin * 100).toFixed(2) }}%</p>
+          <p>Precio sugerido: {{ costing.suggestedPrice }} {{ costing.currency }}</p>
+          @if (costing.realMargin !== null) {
+            <p>Margen real: {{ (costing.realMargin * 100).toFixed(2) }}%</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Precio de venta</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="priceForm" (ngSubmit)="savePrice()" class="inline-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Precio</mat-label>
+            <input matInput type="number" step="0.01" formControlName="price" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" [disabled]="savingPrice()">Guardar precio</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Margen objetivo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="marginForm" (ngSubmit)="saveMargin()" class="inline-form">
+          <mat-checkbox formControlName="useGlobalMargin">Usar margen global del negocio</mat-checkbox>
+          <mat-form-field appearance="outline">
+            <mat-label>Margen propio (%)</mat-label>
+            <input matInput type="number" step="0.01" formControlName="targetMarginPercent" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" [disabled]="savingMargin()">Guardar margen</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
