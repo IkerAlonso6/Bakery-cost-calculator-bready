@@ -25,12 +25,12 @@
           <mat-card-title>Costeo</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p>Materiales: {{ costing.materialCost }}</p>
-          <p>Mano de obra: {{ costing.laborCost }}</p>
-          <p>Costos fijos: {{ costing.fixedCost }}</p>
-          <p>Costo total: {{ costing.totalCost }}</p>
+          <p>Materiales: {{ costing.materialCost | money }}</p>
+          <p>Mano de obra: {{ costing.laborCost | money }}</p>
+          <p>Costos fijos: {{ costing.fixedCost | money }}</p>
+          <p>Costo total: {{ costing.totalCost | money }}</p>
           <p>Margen aplicado: {{ (costing.appliedMargin * 100).toFixed(2) }}%</p>
-          <p>Precio sugerido: {{ costing.suggestedPrice }} {{ costing.currency }}</p>
+          <p>Precio sugerido: {{ costing.suggestedPrice | money }}</p>
           @if (costing.realMargin !== null) {
             <p>Margen real: {{ (costing.realMargin * 100).toFixed(2) }}%</p>
           }
@@ -46,6 +46,7 @@
         <form [formGroup]="priceForm" (ngSubmit)="savePrice()" class="inline-form">
           <mat-form-field appearance="outline">
             <mat-label>Precio</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
             <input matInput type="number" step="0.01" formControlName="price" />
           </mat-form-field>
           <button mat-flat-button color="primary" type="submit" [disabled]="savingPrice()">Guardar precio</button>

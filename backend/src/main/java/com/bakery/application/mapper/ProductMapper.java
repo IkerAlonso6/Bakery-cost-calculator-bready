@@ -5,6 +5,7 @@ import com.bakery.domain.model.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte Product (dominio) -> ProductDTO.
@@ -26,6 +27,6 @@ public class ProductMapper {
     }
 
     public List<ProductDTO> toDtoList(List<Product> products) {
-        return products.stream().map(this::toDto).toList();
+        return products.stream().map(this::toDto).collect(Collectors.toList());
     }
 }

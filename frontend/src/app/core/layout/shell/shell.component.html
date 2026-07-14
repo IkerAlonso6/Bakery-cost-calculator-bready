@@ -3,7 +3,7 @@
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
-    <span class="shell-toolbar-title">Bakery Cost Calculator</span>
+    <span class="shell-toolbar-title">BREADY</span>
   </mat-toolbar>
 }
 
@@ -16,11 +16,11 @@
   >
     <div class="shell-brand">
       <div class="shell-brand-badge">
-        <mat-icon class="icon-filled">bakery_dining</mat-icon>
+        <img src="assets/img/logo/bready-logo-sin-fondo.png" alt="Bready" />
       </div>
       <div>
-        <h2 class="shell-brand-title">Bakery Cost Calculator</h2>
-        <p class="shell-brand-subtitle">Costeo &amp; rentabilidad</p>
+        <h2 class="shell-brand-title">BREADY</h2>
+        <p class="shell-brand-subtitle">Calculadora de costos de panadería</p>
       </div>
     </div>
 
@@ -38,6 +38,33 @@
         </a>
       }
     </mat-nav-list>
+
+    @if (user(); as u) {
+      <button class="shell-user" [matMenuTriggerFor]="userMenu" type="button">
+        <span class="shell-user-avatar">
+          @if (avatarUrl(); as url) {
+            <img [src]="url" alt="" />
+          } @else {
+            {{ initials() }}
+          }
+        </span>
+        <span class="shell-user-info">
+          <span class="shell-user-name">{{ u.displayName }}</span>
+          <span class="shell-user-email">{{ u.email }}</span>
+        </span>
+        <mat-icon class="shell-user-caret">expand_less</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <a mat-menu-item routerLink="/profile" (click)="isHandset() && sidenav.close()">
+          <mat-icon>person</mat-icon>
+          <span>Mi perfil</span>
+        </a>
+        <button mat-menu-item type="button" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
+    }
   </mat-sidenav>
 
   <mat-sidenav-content class="shell-content">

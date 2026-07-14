@@ -62,10 +62,10 @@ class CostingServiceTest {
 
         ProductCosting costing = costingService.calculate(product, fixedCosts, employees, settings);
 
-        assertEquals(new BigDecimal("310.00"), costing.materialCost());
-        assertEquals(new BigDecimal("232.50"), costing.laborCost());   // 310 * (600000/800000)
-        assertEquals(new BigDecimal("77.50"), costing.fixedCost());    // 310 * (200000/800000)
-        assertEquals(new BigDecimal("620.00"), costing.totalCost());   // 310 * (1 + 1.00)
+        assertEquals(new BigDecimal("310.00"), costing.getMaterialCost());
+        assertEquals(new BigDecimal("232.50"), costing.getLaborCost());   // 310 * (600000/800000)
+        assertEquals(new BigDecimal("77.50"), costing.getFixedCost());    // 310 * (200000/800000)
+        assertEquals(new BigDecimal("620.00"), costing.getTotalCost());   // 310 * (1 + 1.00)
     }
 
     @Test
@@ -75,8 +75,8 @@ class CostingServiceTest {
 
         ProductCosting costing = costingService.calculate(product, fixedCosts, employees, settings);
 
-        assertEquals(new BigDecimal("0.35"), costing.appliedMargin());
-        assertEquals(new BigDecimal("953.85"), costing.suggestedPrice()); // 620 / 0.65
+        assertEquals(new BigDecimal("0.35"), costing.getAppliedMargin());
+        assertEquals(new BigDecimal("953.85"), costing.getSuggestedPrice()); // 620 / 0.65
     }
 
     @Test
@@ -87,7 +87,7 @@ class CostingServiceTest {
         ProductCosting costing = costingService.calculate(product, fixedCosts, employees, settings);
 
         // (954 - 620) / 954 = 0.3501
-        assertEquals(new BigDecimal("0.3501"), costing.realMargin());
+        assertEquals(new BigDecimal("0.3501"), costing.getRealMargin().orElseThrow());
     }
 
     @Test
@@ -98,8 +98,8 @@ class CostingServiceTest {
         ProductCosting costing = costingService.calculate(product, fixedCosts, employees, settings);
 
         // (500 - 620) / 500 = -0.24
-        assertEquals(new BigDecimal("-0.2400"), costing.realMargin());
-        assertTrue(costing.realMargin().signum() < 0);
+        assertEquals(new BigDecimal("-0.2400"), costing.getRealMargin().get());
+        assertTrue(costing.getRealMargin().get().signum() < 0);
     }
 
     @Test
@@ -109,8 +109,8 @@ class CostingServiceTest {
 
         ProductCosting costing = costingService.calculate(product, fixedCosts, employees, settings);
 
-        assertEquals(new BigDecimal("0.50"), costing.appliedMargin());
-        assertEquals(new BigDecimal("1240.00"), costing.suggestedPrice()); // 620 / 0.50
+        assertEquals(new BigDecimal("0.50"), costing.getAppliedMargin());
+        assertEquals(new BigDecimal("1240.00"), costing.getSuggestedPrice()); // 620 / 0.50
     }
 
     @Test
@@ -130,7 +130,7 @@ class CostingServiceTest {
 
         ProductCosting costing = costingService.calculate(product, List.of(), List.of(), settings);
 
-        assertEquals(new BigDecimal("310.00"), costing.totalCost());
+        assertEquals(new BigDecimal("310.00"), costing.getTotalCost());
     }
 
     @Test

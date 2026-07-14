@@ -5,18 +5,11 @@ import com.bakery.infrastructure.persistence.entity.CostSettingsEntity;
 import org.springframework.stereotype.Component;
 
 /**
- * Convierte CostSettings (dominio) <-> CostSettingsEntity (singleton).
+ * Convierte CostSettingsEntity -> CostSettings (dominio).
+ * La construcción de la entidad (con user_id) la maneja el RepositoryImpl.
  */
 @Component
 public class CostSettingsEntityMapper {
-
-    public CostSettingsEntity toEntity(CostSettings settings) {
-        return new CostSettingsEntity(
-                settings.getDefaultTargetMargin(),
-                settings.getMonthlyMaterialBase(),
-                settings.getCurrency()
-        );
-    }
 
     public CostSettings toDomain(CostSettingsEntity entity) {
         return new CostSettings(

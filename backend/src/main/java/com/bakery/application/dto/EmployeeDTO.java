@@ -1,9 +1,12 @@
 package com.bakery.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -11,10 +14,16 @@ import java.math.BigDecimal;
  * DTO de empleado. monthlyHours es opcional; costPerHour es de solo
  * lectura (métrica informativa que completa el mapper).
  */
-public record EmployeeDTO(
-        Integer id,
-        @NotBlank String name,
-        @NotNull @PositiveOrZero BigDecimal monthlySalary,
-        @Positive BigDecimal monthlyHours,
-        BigDecimal costPerHour
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class EmployeeDTO {
+    private Integer id;
+    @NotBlank
+    private String name;
+    @NotNull @PositiveOrZero
+    private BigDecimal monthlySalary;
+    @Positive
+    private BigDecimal monthlyHours;
+    private BigDecimal costPerHour;
+}

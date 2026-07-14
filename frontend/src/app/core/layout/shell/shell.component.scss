@@ -12,6 +12,7 @@
 .shell-toolbar-title {
   font-family: var(--brand-font-headline);
   font-weight: 700;
+  letter-spacing: 0.22em;
   margin-left: 8px;
 }
 
@@ -36,22 +37,26 @@
 }
 
 .shell-brand-badge {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: var(--mat-sys-corner-medium);
-  background-color: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 .shell-brand-title {
   font-family: var(--brand-font-headline);
-  font-size: 17px;
-  line-height: 22px;
+  font-size: 20px;
+  line-height: 24px;
   font-weight: 700;
+  letter-spacing: 0.22em;
   color: var(--mat-sys-primary);
   margin: 0;
 }
@@ -74,6 +79,74 @@
   a {
     border-radius: var(--mat-sys-corner-medium);
   }
+}
+
+.shell-user {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(135, 115, 105, 0.2);
+  border-radius: var(--mat-sys-corner-medium);
+  background-color: var(--mat-sys-surface-container-lowest);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--brand-font-body);
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container);
+  }
+}
+
+.shell-user-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-weight: 700;
+  font-size: 15px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.shell-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.shell-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shell-user-email {
+  font-size: 11px;
+  color: rgba(84, 67, 58, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shell-user-caret {
+  color: rgba(84, 67, 58, 0.5);
 }
 
 .shell-content {

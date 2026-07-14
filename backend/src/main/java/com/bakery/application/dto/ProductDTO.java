@@ -1,10 +1,13 @@
 package com.bakery.application.dto;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -14,11 +17,18 @@ import java.math.BigDecimal;
  * - targetMargin null = usa el margen global de cost_settings.
  * recipeName es de solo lectura (lo completa el mapper).
  */
-public record ProductDTO(
-        Integer id,
-        @NotBlank String name,
-        @NotNull Integer recipeId,
-        String recipeName,
-        @PositiveOrZero BigDecimal price,
-        @DecimalMin("0.0") @DecimalMax(value = "1.0", inclusive = false) BigDecimal targetMargin
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductDTO {
+    private Integer id;
+    @NotBlank
+    private String name;
+    @NotNull
+    private Integer recipeId;
+    private String recipeName;
+    @PositiveOrZero
+    private BigDecimal price;
+    @DecimalMin("0.0") @DecimalMax(value = "1.0", inclusive = false)
+    private BigDecimal targetMargin;
+}

@@ -5,6 +5,7 @@ import com.bakery.domain.model.FixedCost;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte FixedCost (dominio) <-> FixedCostDTO.
@@ -21,10 +22,10 @@ public class FixedCostMapper {
     }
 
     public List<FixedCostDTO> toDtoList(List<FixedCost> fixedCosts) {
-        return fixedCosts.stream().map(this::toDto).toList();
+        return fixedCosts.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public FixedCost toDomain(FixedCostDTO dto) {
-        return new FixedCost(dto.name(), dto.monthlyAmount());
+        return new FixedCost(dto.getName(), dto.getMonthlyAmount());
     }
 }

@@ -11,10 +11,11 @@ import { Product, ProductCosting } from '../../../core/models/product.model';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { FixedCostService } from '../../../core/services/fixed-cost.service';
 import { ProductService } from '../../../core/services/product.service';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, MatTableModule, MoneyPipe],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
 })

@@ -88,7 +88,8 @@ public class Employee {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Employee other)) return false;
+        if (!(o instanceof Employee)) return false;
+        Employee other = (Employee) o;
         return id != null && id.equals(other.id);
     }
 

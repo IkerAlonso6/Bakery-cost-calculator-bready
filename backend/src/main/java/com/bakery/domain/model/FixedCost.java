@@ -54,7 +54,8 @@ public class FixedCost {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FixedCost other)) return false;
+        if (!(o instanceof FixedCost)) return false;
+        FixedCost other = (FixedCost) o;
         return id != null && id.equals(other.id);
     }
 

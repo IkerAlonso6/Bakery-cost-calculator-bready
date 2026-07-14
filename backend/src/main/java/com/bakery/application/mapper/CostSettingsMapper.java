@@ -20,9 +20,9 @@ public class CostSettingsMapper {
 
     public CostSettings toDomain(CostSettingsDTO dto) {
         return new CostSettings(
-                dto.defaultTargetMargin(),
-                dto.monthlyMaterialBase(),
-                dto.currency()
+                dto.getDefaultTargetMargin(),
+                dto.getMonthlyMaterialBase(),
+                dto.getCurrency()
         );
     }
 }

@@ -12,6 +12,7 @@ import { Employee } from '../../../core/models/employee.model';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { openConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { EmployeeFormDialogComponent } from '../employee-form-dialog/employee-form-dialog.component';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 @Component({
   selector: 'app-employee-list',
@@ -23,6 +24,7 @@ import { EmployeeFormDialogComponent } from '../employee-form-dialog/employee-fo
     MatProgressSpinnerModule,
     MatTableModule,
     MatTooltipModule,
+    MoneyPipe,
   ],
   templateUrl: './employee-list.component.html',
 })

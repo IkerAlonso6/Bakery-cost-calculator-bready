@@ -8,7 +8,7 @@
 
 @if (total(); as t) {
   <mat-card class="total-card">
-    <mat-card-content>Total mensual (L): {{ t }}</mat-card-content>
+    <mat-card-content>Total mensual (L): {{ t | money }}</mat-card-content>
   </mat-card>
 }
 
@@ -27,7 +27,7 @@
 
     <ng-container matColumnDef="monthlySalary">
       <th mat-header-cell *matHeaderCellDef>Sueldo mensual</th>
-      <td mat-cell *matCellDef="let employee">{{ employee.monthlySalary }}</td>
+      <td mat-cell *matCellDef="let employee">{{ employee.monthlySalary | money }}</td>
     </ng-container>
 
     <ng-container matColumnDef="monthlyHours">
@@ -37,7 +37,7 @@
 
     <ng-container matColumnDef="costPerHour">
       <th mat-header-cell *matHeaderCellDef>Costo/hora</th>
-      <td mat-cell *matCellDef="let employee">{{ employee.costPerHour ?? '—' }}</td>
+      <td mat-cell *matCellDef="let employee">{{ employee.costPerHour | money }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">

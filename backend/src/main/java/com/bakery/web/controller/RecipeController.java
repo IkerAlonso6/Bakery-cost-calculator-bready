@@ -5,7 +5,7 @@ import com.bakery.application.dto.RecipeDTO;
 import com.bakery.application.mapper.InputMapper;
 import com.bakery.application.mapper.RecipeMapper;
 import com.bakery.application.service.RecipeService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,9 +34,10 @@ public class RecipeController {
     @PostMapping
     public ResponseEntity<RecipeDTO> create(@Valid @RequestBody RecipeDTO dto) {
         var created = recipeService.createRecipe(
-                dto.name(),
-                dto.yieldQuantity(),
-                InputMapper.parseUnit(dto.yieldUnit()));
+                dto.getName(),
+                dto.getYieldQuantity(),
+                InputMapper.parseUnit(dto.getYieldUnit()),
+                dto.getIngredients());
         return ResponseEntity.status(HttpStatus.CREATED).body(recipeMapper.toDto(created));
     }
 
@@ -53,7 +54,14 @@ public class RecipeController {
     @PostMapping("/{id}/ingredients")
     public RecipeDTO addIngredient(@PathVariable Integer id,
                                    @Valid @RequestBody IngredientDTO ingredient) {
-        var updated = recipeService.addIngredientToRecipe(id, ingredient.inputId(), ingredient.quantity());
+        var updated = recipeService.addIngredientToRecipe(id, ingredient.getInputId(), ingredient.getQuantity());
+        return recipeMapper.toDto(updated);
+    }
+
+    @DeleteMapping("/{id}/ingredients/{ingredientId}")
+    public RecipeDTO removeIngredient(@PathVariable Integer id,
+                                      @PathVariable Integer ingredientId) {
+        var updated = recipeService.removeIngredientFromRecipe(id, ingredientId);
         return recipeMapper.toDto(updated);
     }
 

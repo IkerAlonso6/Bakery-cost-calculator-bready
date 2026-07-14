@@ -16,7 +16,17 @@ export interface Recipe {
   ingredients: Ingredient[];
 }
 
-export type RecipeCreateRequest = Omit<Recipe, 'id' | 'ingredients'>;
+export interface RecipeIngredientInput {
+  inputId: number;
+  quantity: number;
+}
+
+export interface RecipeCreateRequest {
+  name: string;
+  yieldQuantity: number;
+  yieldUnit: UnitOfMeasurement;
+  ingredients: RecipeIngredientInput[];
+}
 
 export interface AddIngredientRequest {
   inputId: number;

@@ -1,8 +1,11 @@
 package com.bakery.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,10 +15,16 @@ import java.util.List;
  * ingredients es de solo lectura en las respuestas; los ingredientes
  * se agregan por el endpoint POST /api/recipes/{id}/ingredients.
  */
-public record RecipeDTO(
-        Integer id,
-        @NotBlank String name,
-        @NotNull @Positive BigDecimal yieldQuantity,
-        @NotBlank String yieldUnit,
-        List<IngredientDTO> ingredients
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RecipeDTO {
+    private Integer id;
+    @NotBlank
+    private String name;
+    @NotNull @Positive
+    private BigDecimal yieldQuantity;
+    @NotBlank
+    private String yieldUnit;
+    private List<IngredientDTO> ingredients;
+}

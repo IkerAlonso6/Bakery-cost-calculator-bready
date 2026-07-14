@@ -1,7 +1,9 @@
 package com.bakery.infrastructure.persistence.repository;
 
+import com.bakery.application.port.CurrentUserProvider;
 import com.bakery.application.port.IFixedCostRepository;
 import com.bakery.domain.model.FixedCost;
+import com.bakery.infrastructure.persistence.entity.FixedCostEntity;
 import com.bakery.infrastructure.persistence.jpa.FixedCostJpaRepository;
 import com.bakery.infrastructure.persistence.mapper.FixedCostEntityMapper;
 import org.springframework.stereotype.Repository;
@@ -9,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * Adaptador de persistencia de costos fijos.
+ * Adaptador de persistencia de costos fijos (scopeado por usuario).
  */
 @Repository
 @Transactional
@@ -19,31 +22,39 @@ public class FixedCostRepositoryImpl implements IFixedCostRepository {
 
     private final FixedCostJpaRepository jpaRepository;
     private final FixedCostEntityMapper mapper;
+    private final CurrentUserProvider currentUserProvider;
 
-    public FixedCostRepositoryImpl(FixedCostJpaRepository jpaRepository, FixedCostEntityMapper mapper) {
+    public FixedCostRepositoryImpl(FixedCostJpaRepository jpaRepository, FixedCostEntityMapper mapper,
+                                   CurrentUserProvider currentUserProvider) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
+        this.currentUserProvider = currentUserProvider;
     }
 
     @Override
     public FixedCost save(FixedCost fixedCost) {
-        return mapper.toDomain(jpaRepository.save(mapper.toEntity(fixedCost)));
+        FixedCostEntity entity = mapper.toEntity(fixedCost);
+        entity.setUserId(currentUserProvider.getCurrentUserId());
+        return mapper.toDomain(jpaRepository.save(entity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<FixedCost> findById(Integer id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        return jpaRepository.findByIdAndUserId(id, currentUserProvider.getCurrentUserId())
+                .map(mapper::toDomain);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<FixedCost> findAll() {
-        return jpaRepository.findAll().stream().map(mapper::toDomain).toList();
+        return jpaRepository.findByUserId(currentUserProvider.getCurrentUserId())
+                .stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override
     public void deleteById(Integer id) {
-        jpaRepository.deleteById(id);
+        jpaRepository.findByIdAndUserId(id, currentUserProvider.getCurrentUserId())
+                .ifPresent(jpaRepository::delete);
     }
 }

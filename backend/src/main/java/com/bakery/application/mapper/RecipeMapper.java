@@ -5,6 +5,7 @@ import com.bakery.domain.model.Recipe;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte Recipe (dominio) <-> RecipeDTO (incluye ingredientes).
@@ -19,25 +20,25 @@ public class RecipeMapper {
     }
 
     public RecipeDTO toDto(Recipe recipe) {
-        return new RecipeDTO(
-                recipe.getId(),
-                recipe.getName(),
-                recipe.getYieldQuantity(),
-                recipe.getYieldUnit().name(),
-                ingredientMapper.toDtoList(recipe.getIngredients())
-        );
+        RecipeDTO dto = new RecipeDTO();
+        dto.setId(recipe.getId());
+        dto.setName(recipe.getName());
+        dto.setYieldQuantity(recipe.getYieldQuantity());
+        dto.setYieldUnit(recipe.getYieldUnit().name());
+        dto.setIngredients(ingredientMapper.toDtoList(recipe.getIngredients()));
+        return dto;
     }
 
     public List<RecipeDTO> toDtoList(List<Recipe> recipes) {
-        return recipes.stream().map(this::toDto).toList();
+        return recipes.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     /** Crea la receta de dominio (sin ingredientes; se agregan por endpoint propio). */
     public Recipe toDomain(RecipeDTO dto) {
         return new Recipe(
-                dto.name(),
-                dto.yieldQuantity(),
-                InputMapper.parseUnit(dto.yieldUnit())
+                dto.getName(),
+                dto.getYieldQuantity(),
+                InputMapper.parseUnit(dto.getYieldUnit())
         );
     }
 }

@@ -4,7 +4,7 @@ import com.bakery.application.dto.InputDTO;
 import com.bakery.application.dto.UpdatePriceRequest;
 import com.bakery.application.mapper.InputMapper;
 import com.bakery.application.service.InputService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,9 +33,9 @@ public class InputController {
     @PostMapping
     public ResponseEntity<InputDTO> create(@Valid @RequestBody InputDTO dto) {
         var created = inputService.createInput(
-                dto.name(),
-                InputMapper.parseUnit(dto.unitOfMeasure()),
-                dto.price());
+                dto.getName(),
+                InputMapper.parseUnit(dto.getUnitOfMeasure()),
+                dto.getPrice());
         return ResponseEntity.status(HttpStatus.CREATED).body(inputMapper.toDto(created));
     }
 
@@ -52,7 +52,7 @@ public class InputController {
     @PutMapping("/{id}/price")
     public InputDTO updatePrice(@PathVariable Integer id,
                                 @Valid @RequestBody UpdatePriceRequest request) {
-        return inputMapper.toDto(inputService.updateInputPrice(id, request.price()));
+        return inputMapper.toDto(inputService.updateInputPrice(id, request.getPrice()));
     }
 
     @DeleteMapping("/{id}")

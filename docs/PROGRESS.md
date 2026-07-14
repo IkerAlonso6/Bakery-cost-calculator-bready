@@ -6,9 +6,11 @@ Trackea el progreso de desarrollo. Actualizá conforme completes cada ticket (ve
 
 ## Resumen
 
-**Último update:** 2026-07-08
-**Tickets completados:** 35/35
-**Etapa actual:** Backend completo (funcional + testing) ✅ — pendiente: verificación con PostgreSQL real y frontend Angular
+**Último update:** 2026-07-14
+**Tickets completados:** 35/35 (base) + expansión Bready
+**Etapa actual:** Backend + frontend Angular completos y verificados e2e ✅. App renombrada a **Bready** con autenticación, multi-tenancy, perfil, ingredientes en recetas y moneda ($). Ver `BREADY_EXPANSION.md`.
+
+> **Expansión Bready (2026-07-14):** login/registro/logout (JWT), datos por usuario (multi-tenant, migración `V2`), perfil con foto (en BD), ingredientes en el alta de recetas + quitar, formato de moneda `$`, y rebranding. Detalle en [`BREADY_EXPANSION.md`](BREADY_EXPANSION.md). Backend: 155 tests en verde. Frontend: build de producción OK.
 
 Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 

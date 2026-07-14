@@ -3,7 +3,7 @@ package com.bakery.web.controller;
 import com.bakery.application.dto.EmployeeDTO;
 import com.bakery.application.mapper.EmployeeMapper;
 import com.bakery.application.service.EmployeeService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +32,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<EmployeeDTO> create(@Valid @RequestBody EmployeeDTO dto) {
-        var created = employeeService.createEmployee(dto.name(), dto.monthlySalary(), dto.monthlyHours());
+        var created = employeeService.createEmployee(dto.getName(), dto.getMonthlySalary(), dto.getMonthlyHours());
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeMapper.toDto(created));
     }
 
@@ -56,8 +56,8 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public EmployeeDTO update(@PathVariable Integer id,
                               @Valid @RequestBody EmployeeDTO dto) {
-        employeeService.updateEmployeeSalary(id, dto.monthlySalary());
-        var updated = employeeService.updateEmployeeHours(id, dto.monthlyHours());
+        employeeService.updateEmployeeSalary(id, dto.getMonthlySalary());
+        var updated = employeeService.updateEmployeeHours(id, dto.getMonthlyHours());
         return employeeMapper.toDto(updated);
     }
 

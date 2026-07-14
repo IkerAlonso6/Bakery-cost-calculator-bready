@@ -3,7 +3,7 @@ package com.bakery.web.controller;
 import com.bakery.application.dto.CostSettingsDTO;
 import com.bakery.application.mapper.CostSettingsMapper;
 import com.bakery.application.service.CostSettingsService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -38,6 +38,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Base mensual de materiales (M)</mat-label>
+          <span matTextPrefix>$&nbsp;</span>
           <input matInput type="number" step="0.01" formControlName="monthlyMaterialBase" />
           @if (form.controls.monthlyMaterialBase.hasError('required')) {
             <mat-error>Es obligatorio</mat-error>

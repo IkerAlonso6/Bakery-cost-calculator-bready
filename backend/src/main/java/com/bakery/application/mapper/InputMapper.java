@@ -6,6 +6,7 @@ import com.bakery.domain.model.UnitOfMeasurement;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte Input (dominio) <-> InputDTO.
@@ -23,15 +24,15 @@ public class InputMapper {
     }
 
     public List<InputDTO> toDtoList(List<Input> inputs) {
-        return inputs.stream().map(this::toDto).toList();
+        return inputs.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     /** Crea el objeto de dominio desde el DTO (sin id: lo asigna la persistencia). */
     public Input toDomain(InputDTO dto) {
         return new Input(
-                dto.name(),
-                parseUnit(dto.unitOfMeasure()),
-                dto.price()
+                dto.getName(),
+                parseUnit(dto.getUnitOfMeasure()),
+                dto.getPrice()
         );
     }
 

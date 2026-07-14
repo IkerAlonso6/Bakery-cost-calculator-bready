@@ -1,9 +1,9 @@
 package com.bakery.infrastructure.persistence.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Tabla de referencia units_of_measurement (ids fijos 1-6, seed de V1__init.sql).

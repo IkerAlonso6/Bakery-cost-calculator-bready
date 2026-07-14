@@ -3,7 +3,7 @@ package com.bakery.web.controller;
 import com.bakery.application.dto.FixedCostDTO;
 import com.bakery.application.mapper.FixedCostMapper;
 import com.bakery.application.service.FixedCostService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +32,7 @@ public class FixedCostController {
 
     @PostMapping
     public ResponseEntity<FixedCostDTO> create(@Valid @RequestBody FixedCostDTO dto) {
-        var created = fixedCostService.createFixedCost(dto.name(), dto.monthlyAmount());
+        var created = fixedCostService.createFixedCost(dto.getName(), dto.getMonthlyAmount());
         return ResponseEntity.status(HttpStatus.CREATED).body(fixedCostMapper.toDto(created));
     }
 
@@ -55,7 +55,7 @@ public class FixedCostController {
     @PutMapping("/{id}")
     public FixedCostDTO update(@PathVariable Integer id,
                                @Valid @RequestBody FixedCostDTO dto) {
-        return fixedCostMapper.toDto(fixedCostService.updateFixedCostAmount(id, dto.monthlyAmount()));
+        return fixedCostMapper.toDto(fixedCostService.updateFixedCostAmount(id, dto.getMonthlyAmount()));
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,9 @@
 package com.bakery.application.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 /**
@@ -9,16 +13,19 @@ import java.math.BigDecimal;
  * - price y realMargin son null si el producto no tiene precio manual fijado.
  * - appliedMargin es el margen usado para el precio sugerido (override o global).
  */
-public record ProductCostingDTO(
-        Integer productId,
-        String productName,
-        BigDecimal materialCost,
-        BigDecimal laborCost,
-        BigDecimal fixedCost,
-        BigDecimal totalCost,
-        BigDecimal appliedMargin,
-        BigDecimal suggestedPrice,
-        BigDecimal price,
-        BigDecimal realMargin,
-        String currency
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductCostingDTO {
+    private Integer productId;
+    private String productName;
+    private BigDecimal materialCost;
+    private BigDecimal laborCost;
+    private BigDecimal fixedCost;
+    private BigDecimal totalCost;
+    private BigDecimal appliedMargin;
+    private BigDecimal suggestedPrice;
+    private BigDecimal price;
+    private BigDecimal realMargin;
+    private String currency;
+}

@@ -10,7 +10,7 @@
   <mat-card class="total-card">
     <mat-card-content>
       <p class="stat-label">Total mensual (F)</p>
-      <p class="entity-card-price">{{ t }}</p>
+      <p class="entity-card-price">{{ t | money }}</p>
     </mat-card-content>
   </mat-card>
 }
@@ -36,7 +36,7 @@
           <div class="entity-card-footer">
             <div>
               <p class="stat-label">Monto mensual</p>
-              <p class="entity-card-price">{{ fixedCost.monthlyAmount }}</p>
+              <p class="entity-card-price">{{ fixedCost.monthlyAmount | money }}</p>
             </div>
             <button
               mat-icon-button

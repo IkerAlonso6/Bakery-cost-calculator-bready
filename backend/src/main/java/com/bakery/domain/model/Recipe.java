@@ -60,6 +60,20 @@ public class Recipe {
         ingredients.add(ingredient);
     }
 
+    /**
+     * Quita un ingrediente por su id. Lanza si no pertenece a la receta.
+     */
+    public void removeIngredient(Integer ingredientId) {
+        if (ingredientId == null) {
+            throw new IllegalArgumentException("Ingredient id must not be null");
+        }
+        boolean removed = ingredients.removeIf(existing -> ingredientId.equals(existing.getId()));
+        if (!removed) {
+            throw new IllegalArgumentException(
+                    "Ingredient " + ingredientId + " is not part of recipe '" + name + "'");
+        }
+    }
+
     private static boolean sameInput(Input a, Input b) {
         if (a.getId() != null && b.getId() != null) {
             return a.getId().equals(b.getId());
@@ -102,7 +116,8 @@ public class Recipe {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Recipe other)) return false;
+        if (!(o instanceof Recipe)) return false;
+        Recipe other = (Recipe) o;
         return id != null && id.equals(other.id);
     }
 

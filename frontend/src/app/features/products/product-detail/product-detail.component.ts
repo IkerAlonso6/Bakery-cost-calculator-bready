@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, finalize, of } from 'rxjs';
 import { Product, ProductCosting } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 @Component({
   selector: 'app-product-detail',
@@ -25,6 +26,7 @@ import { ProductService } from '../../../core/services/product.service';
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MoneyPipe,
   ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',

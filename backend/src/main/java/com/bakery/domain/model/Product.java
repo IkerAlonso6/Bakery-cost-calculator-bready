@@ -100,7 +100,8 @@ public class Product {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Product other)) return false;
+        if (!(o instanceof Product)) return false;
+        Product other = (Product) o;
         return id != null && id.equals(other.id);
     }
 

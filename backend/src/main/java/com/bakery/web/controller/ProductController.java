@@ -7,7 +7,7 @@ import com.bakery.application.dto.UpdatePriceRequest;
 import com.bakery.application.mapper.ProductMapper;
 import com.bakery.application.service.CostingAppService;
 import com.bakery.application.service.ProductService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +40,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDTO> create(@Valid @RequestBody ProductDTO dto) {
         var created = productService.createProduct(
-                dto.name(), dto.recipeId(), dto.price(), dto.targetMargin());
+                dto.getName(), dto.getRecipeId(), dto.getPrice(), dto.getTargetMargin());
         return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toDto(created));
     }
 
@@ -57,14 +57,14 @@ public class ProductController {
     @PutMapping("/{id}/price")
     public ProductDTO updatePrice(@PathVariable Integer id,
                                   @Valid @RequestBody UpdatePriceRequest request) {
-        return productMapper.toDto(productService.updateProductPrice(id, request.price()));
+        return productMapper.toDto(productService.updateProductPrice(id, request.getPrice()));
     }
 
     /** Margen objetivo propio del producto; body con targetMargin null vuelve al global. */
     @PutMapping("/{id}/margin")
     public ProductDTO updateMargin(@PathVariable Integer id,
                                    @Valid @RequestBody UpdateMarginRequest request) {
-        return productMapper.toDto(productService.updateProductTargetMargin(id, request.targetMargin()));
+        return productMapper.toDto(productService.updateProductTargetMargin(id, request.getTargetMargin()));
     }
 
     /**

@@ -16,14 +16,14 @@ public class ProductCostingMapper {
         return new ProductCostingDTO(
                 product.getId(),
                 product.getName(),
-                costing.materialCost(),
-                costing.laborCost(),
-                costing.fixedCost(),
-                costing.totalCost(),
-                costing.appliedMargin(),
-                costing.suggestedPrice(),
+                costing.getMaterialCost(),
+                costing.getLaborCost(),
+                costing.getFixedCost(),
+                costing.getTotalCost(),
+                costing.getAppliedMargin(),
+                costing.getSuggestedPrice(),
                 product.getPrice().orElse(null),
-                costing.realMargin(),
+                costing.getRealMargin().orElse(null),
                 currency
         );
     }

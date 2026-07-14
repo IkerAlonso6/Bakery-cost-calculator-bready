@@ -1,17 +1,26 @@
 package com.bakery.application.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 /**
  * DTO de insumo. unitOfMeasure es el nombre del enum (KILOGRAM, GRAM...).
  */
-public record InputDTO(
-        Integer id,
-        @NotBlank String name,
-        @NotBlank String unitOfMeasure,
-        @NotNull @Positive BigDecimal price
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class InputDTO {
+    private Integer id;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String unitOfMeasure;
+    @NotNull @Positive
+    private BigDecimal price;
+}

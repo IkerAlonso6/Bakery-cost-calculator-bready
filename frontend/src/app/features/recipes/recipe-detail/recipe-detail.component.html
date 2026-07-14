@@ -17,7 +17,7 @@
       </mat-card-header>
       <mat-card-content>
         <p>Rendimiento: {{ r.yieldQuantity }} {{ r.yieldUnit | unitSymbol }}</p>
-        <p>Costo de materiales por unidad: {{ cost() }}</p>
+        <p>Costo de materiales por unidad: {{ cost() | money }}</p>
       </mat-card-content>
     </mat-card>
 
@@ -42,7 +42,21 @@
 
             <ng-container matColumnDef="cost">
               <th mat-header-cell *matHeaderCellDef>Costo</th>
-              <td mat-cell *matCellDef="let ingredient">{{ ingredient.cost }}</td>
+              <td mat-cell *matCellDef="let ingredient">{{ ingredient.cost | money }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let ingredient">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="removeIngredient(ingredient.id)"
+                  aria-label="Quitar ingrediente"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

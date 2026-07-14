@@ -93,14 +93,14 @@ class CostingAppServiceTest {
 
         ProductCostingDTO dto = costingAppService.getProductPricing(1);
 
-        assertEquals(new BigDecimal("310.00"), dto.materialCost());
-        assertEquals(new BigDecimal("232.50"), dto.laborCost());
-        assertEquals(new BigDecimal("77.50"), dto.fixedCost());
-        assertEquals(new BigDecimal("620.00"), dto.totalCost());
-        assertEquals(new BigDecimal("953.85"), dto.suggestedPrice());
-        assertEquals("ARS", dto.currency());
-        assertNull(dto.price());
-        assertNull(dto.realMargin());
+        assertEquals(new BigDecimal("310.00"), dto.getMaterialCost());
+        assertEquals(new BigDecimal("232.50"), dto.getLaborCost());
+        assertEquals(new BigDecimal("77.50"), dto.getFixedCost());
+        assertEquals(new BigDecimal("620.00"), dto.getTotalCost());
+        assertEquals(new BigDecimal("953.85"), dto.getSuggestedPrice());
+        assertEquals("ARS", dto.getCurrency());
+        assertNull(dto.getPrice());
+        assertNull(dto.getRealMargin());
     }
 
     @Test
@@ -114,8 +114,8 @@ class CostingAppServiceTest {
 
         ProductCostingDTO dto = costingAppService.getProductPricing(1);
 
-        assertEquals(new BigDecimal("954"), dto.price());
-        assertEquals(new BigDecimal("0.3501"), dto.realMargin());
+        assertEquals(new BigDecimal("954"), dto.getPrice());
+        assertEquals(new BigDecimal("0.3501"), dto.getRealMargin());
     }
 
     @Test
@@ -129,8 +129,8 @@ class CostingAppServiceTest {
 
         ProductCostingDTO dto = costingAppService.getProductPricing(1);
 
-        assertEquals(new BigDecimal("0.50"), dto.appliedMargin());
-        assertEquals(new BigDecimal("1240.00"), dto.suggestedPrice());
+        assertEquals(new BigDecimal("0.50"), dto.getAppliedMargin());
+        assertEquals(new BigDecimal("1240.00"), dto.getSuggestedPrice());
     }
 
     @Test

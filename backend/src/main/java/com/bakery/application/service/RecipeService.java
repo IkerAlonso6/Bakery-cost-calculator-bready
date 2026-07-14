@@ -1,5 +1,6 @@
 package com.bakery.application.service;
 
+import com.bakery.application.dto.IngredientDTO;
 import com.bakery.application.exception.RecipeNotFoundException;
 import com.bakery.application.port.IRecipeRepository;
 import com.bakery.domain.model.Ingredient;
@@ -26,7 +27,24 @@ public class RecipeService {
     }
 
     public Recipe createRecipe(String name, BigDecimal yieldQuantity, UnitOfMeasurement yieldUnit) {
-        return recipeRepository.save(new Recipe(name, yieldQuantity, yieldUnit));
+        return createRecipe(name, yieldQuantity, yieldUnit, null);
+    }
+
+    /**
+     * Crea una receta y, opcionalmente, carga sus ingredientes iniciales.
+     * Cada ingrediente resuelve su Input por id (404 si no existe) y respeta
+     * la regla de dominio de no repetir el mismo insumo.
+     */
+    public Recipe createRecipe(String name, BigDecimal yieldQuantity, UnitOfMeasurement yieldUnit,
+                               List<IngredientDTO> ingredients) {
+        Recipe recipe = new Recipe(name, yieldQuantity, yieldUnit);
+        if (ingredients != null) {
+            for (IngredientDTO ing : ingredients) {
+                Input input = inputService.getInputById(ing.getInputId());
+                recipe.addIngredient(new Ingredient(input, ing.getQuantity()));
+            }
+        }
+        return recipeRepository.save(recipe);
     }
 
     public Recipe getRecipeById(Integer id) {
@@ -46,6 +64,15 @@ public class RecipeService {
         Recipe recipe = getRecipeById(recipeId);
         Input input = inputService.getInputById(inputId);
         recipe.addIngredient(new Ingredient(input, quantity));
+        return recipeRepository.save(recipe);
+    }
+
+    /**
+     * Quita un ingrediente de la receta (por id de ingrediente).
+     */
+    public Recipe removeIngredientFromRecipe(Integer recipeId, Integer ingredientId) {
+        Recipe recipe = getRecipeById(recipeId);
+        recipe.removeIngredient(ingredientId);
         return recipeRepository.save(recipe);
     }
 

@@ -11,6 +11,7 @@ import { FixedCost } from '../../../core/models/fixed-cost.model';
 import { FixedCostService } from '../../../core/services/fixed-cost.service';
 import { openConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { FixedCostFormDialogComponent } from '../fixed-cost-form-dialog/fixed-cost-form-dialog.component';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 @Component({
   selector: 'app-fixed-cost-list',
@@ -21,6 +22,7 @@ import { FixedCostFormDialogComponent } from '../fixed-cost-form-dialog/fixed-co
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MoneyPipe,
   ],
   templateUrl: './fixed-cost-list.component.html',
 })

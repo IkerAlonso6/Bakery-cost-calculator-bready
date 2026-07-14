@@ -25,6 +25,10 @@ export class RecipeService {
     return this.http.post<Recipe>(`${this.base}/${recipeId}/ingredients`, request);
   }
 
+  removeIngredient(recipeId: number, ingredientId: number): Observable<Recipe> {
+    return this.http.delete<Recipe>(`${this.base}/${recipeId}/ingredients/${ingredientId}`);
+  }
+
   /** Costo de materiales por unidad de rendimiento. El backend devuelve un número plano. */
   getCost(id: number): Observable<number> {
     return this.http

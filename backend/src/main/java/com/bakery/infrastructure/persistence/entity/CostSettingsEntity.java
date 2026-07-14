@@ -1,24 +1,27 @@
 package com.bakery.infrastructure.persistence.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import java.math.BigDecimal;
 
 /**
- * Configuración global de costeo. Fila única con id = 1
- * (CHECK cost_settings_singleton en la BD).
+ * Configuración de costeo. Una fila por usuario (user_id UNIQUE).
  */
 @Entity
 @Table(name = "cost_settings")
 public class CostSettingsEntity {
 
-    public static final short SINGLETON_ID = 1;
-
     @Id
-    private Short id = SINGLETON_ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Integer userId;
 
     @Column(name = "default_target_margin", nullable = false, precision = 5, scale = 4)
     private BigDecimal defaultTargetMargin;
@@ -33,19 +36,28 @@ public class CostSettingsEntity {
         // requerido por JPA
     }
 
-    public CostSettingsEntity(BigDecimal defaultTargetMargin, BigDecimal monthlyMaterialBase, String currency) {
-        this.id = SINGLETON_ID;
+    public CostSettingsEntity(Integer userId, BigDecimal defaultTargetMargin,
+                              BigDecimal monthlyMaterialBase, String currency) {
+        this.userId = userId;
         this.defaultTargetMargin = defaultTargetMargin;
         this.monthlyMaterialBase = monthlyMaterialBase;
         this.currency = currency;
     }
 
-    public Short getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Short id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public BigDecimal getDefaultTargetMargin() {

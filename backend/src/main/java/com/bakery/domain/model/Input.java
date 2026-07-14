@@ -63,7 +63,8 @@ public class Input {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Input other)) return false;
+        if (!(o instanceof Input)) return false;
+        Input other = (Input) o;
         return id != null && id.equals(other.id);
     }
 

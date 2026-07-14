@@ -16,6 +16,7 @@ import { Recipe } from '../../../core/models/recipe.model';
 import { InputService } from '../../../core/services/input.service';
 import { RecipeService } from '../../../core/services/recipe.service';
 import { UnitSymbolPipe } from '../../../shared/pipes/unit-symbol.pipe';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -30,6 +31,7 @@ import { UnitSymbolPipe } from '../../../shared/pipes/unit-symbol.pipe';
     MatSelectModule,
     MatTableModule,
     UnitSymbolPipe,
+    MoneyPipe,
   ],
   templateUrl: './recipe-detail.component.html',
   styleUrl: './recipe-detail.component.scss',
@@ -49,7 +51,7 @@ export class RecipeDetailComponent {
   protected readonly recipe = signal<Recipe | null>(null);
   protected readonly cost = signal<number | null>(null);
   protected readonly availableInputs = signal<BakeryInput[]>([]);
-  protected readonly displayedColumns = ['inputName', 'quantity', 'cost'];
+  protected readonly displayedColumns = ['inputName', 'quantity', 'cost', 'actions'];
 
   protected readonly form = this.fb.nonNullable.group({
     inputId: [null as number | null, [Validators.required]],
@@ -96,6 +98,19 @@ export class RecipeDetailComponent {
         },
         error: () => {},
       });
+  }
+
+  removeIngredient(ingredientId: number | null): void {
+    if (ingredientId == null) {
+      return;
+    }
+    this.recipeService.removeIngredient(this.recipeId, ingredientId).subscribe({
+      next: () => {
+        this.snackBar.open('Ingrediente quitado', 'Cerrar', { duration: 3000 });
+        this.loadAll();
+      },
+      error: () => {},
+    });
   }
 
   goBack(): void {

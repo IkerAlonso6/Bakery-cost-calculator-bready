@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte Employee (dominio) <-> EmployeeDTO.
@@ -27,10 +28,10 @@ public class EmployeeMapper {
     }
 
     public List<EmployeeDTO> toDtoList(List<Employee> employees) {
-        return employees.stream().map(this::toDto).toList();
+        return employees.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public Employee toDomain(EmployeeDTO dto) {
-        return new Employee(dto.name(), dto.monthlySalary(), dto.monthlyHours());
+        return new Employee(dto.getName(), dto.getMonthlySalary(), dto.getMonthlyHours());
     }
 }

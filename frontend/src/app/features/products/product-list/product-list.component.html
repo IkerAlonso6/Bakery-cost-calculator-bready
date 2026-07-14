@@ -38,18 +38,18 @@
           <div class="product-card-stats">
             <div class="stat-tile">
               <p class="stat-label">Costo materiales</p>
-              <p class="stat-value">{{ card.costing?.materialCost ?? '—' }}</p>
+              <p class="stat-value">{{ card.costing?.materialCost | money }}</p>
             </div>
             <div class="stat-tile">
               <p class="stat-label">Costo total</p>
-              <p class="stat-value">{{ card.costing?.totalCost ?? '—' }}</p>
+              <p class="stat-value">{{ card.costing?.totalCost | money }}</p>
             </div>
           </div>
 
           <div class="product-card-footer">
             <div>
               <p class="stat-label">Precio venta</p>
-              <p class="product-card-price">{{ card.product.price ?? card.costing?.suggestedPrice ?? '—' }}</p>
+              <p class="product-card-price">{{ card.product.price ?? card.costing?.suggestedPrice | money }}</p>
             </div>
             <button mat-icon-button class="edit-button" matTooltip="Ver / editar">
               <mat-icon>edit</mat-icon>

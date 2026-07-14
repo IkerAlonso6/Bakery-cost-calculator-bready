@@ -12,6 +12,7 @@ import { Product, ProductCosting } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { openConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ProductFormDialogComponent } from '../product-form-dialog/product-form-dialog.component';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 
 interface ProductCard {
   product: Product;
@@ -27,6 +28,7 @@ interface ProductCard {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MoneyPipe,
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',

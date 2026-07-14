@@ -5,6 +5,7 @@ import com.bakery.domain.model.Ingredient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Convierte Ingredient (dominio) -> IngredientDTO.
@@ -25,6 +26,6 @@ public class IngredientMapper {
     }
 
     public List<IngredientDTO> toDtoList(List<Ingredient> ingredients) {
-        return ingredients.stream().map(this::toDto).toList();
+        return ingredients.stream().map(this::toDto).collect(Collectors.toList());
     }
 }

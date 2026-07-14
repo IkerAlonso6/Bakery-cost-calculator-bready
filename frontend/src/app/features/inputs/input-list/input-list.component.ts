@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { Input } from '../../../core/models/input.model';
 import { InputService } from '../../../core/services/input.service';
 import { UnitSymbolPipe } from '../../../shared/pipes/unit-symbol.pipe';
+import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 import { openConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InputFormDialogComponent } from '../input-form-dialog/input-form-dialog.component';
 
@@ -23,6 +24,7 @@ import { InputFormDialogComponent } from '../input-form-dialog/input-form-dialog
     MatProgressSpinnerModule,
     MatTooltipModule,
     UnitSymbolPipe,
+    MoneyPipe,
   ],
   templateUrl: './input-list.component.html',
 })
