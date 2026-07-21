@@ -1,10 +1,29 @@
 <h1>Dashboard</h1>
 
+<div class="period-selector">
+  <button mat-icon-button (click)="previousMonth()" matTooltip="Mes anterior">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span class="period-label">{{ periodLabel() }}</span>
+  <button mat-icon-button (click)="nextMonth()" matTooltip="Mes siguiente">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</div>
+
 @if (loading()) {
   <div class="loading-row">
     <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
   </div>
 } @else {
+  @if (fallbackNotice(); as notice) {
+    <mat-card class="info-banner">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <span>{{ notice }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
   <div class="summary-row">
     <mat-card class="summary-card">
       <mat-card-content>
@@ -26,6 +45,41 @@
     </mat-card>
   </div>
 
+  @if (fixedCostsByCategory().length > 0 || employeesByCategory().length > 0) {
+    <div class="category-breakdown-row">
+      @if (fixedCostsByCategory().length > 0) {
+        <mat-card class="category-breakdown-card">
+          <mat-card-header>
+            <mat-card-title>Costos fijos por categoría</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @for (c of fixedCostsByCategory(); track c.category) {
+              <div class="category-breakdown-item">
+                <span>{{ c.label }}</span>
+                <span>{{ c.total | money }}</span>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+      @if (employeesByCategory().length > 0) {
+        <mat-card class="category-breakdown-card">
+          <mat-card-header>
+            <mat-card-title>Sueldos por categoría</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @for (c of employeesByCategory(); track c.category) {
+              <div class="category-breakdown-item">
+                <span>{{ c.label }}</span>
+                <span>{{ c.total | money }}</span>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
   @if (costingUnavailable()) {
     <mat-card class="info-banner">
       <mat-card-content>
@@ -43,7 +97,7 @@
 
       <ng-container matColumnDef="totalCost">
         <th mat-header-cell *matHeaderCellDef>Costo total</th>
-        <td mat-cell *matCellDef="let p">{{ p.totalCost | money }}</td>
+        <td mat-cell *matCellDef="let p" [matTooltip]="costingBreakdownTooltip(p)">{{ p.totalCost | money }}</td>
       </ng-container>
 
       <ng-container matColumnDef="appliedMargin">

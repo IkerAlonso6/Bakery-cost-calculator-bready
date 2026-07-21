@@ -204,6 +204,32 @@ mat-card-title {
   max-width: 320px;
 }
 
+/* Selector de mes (Empleados, Costos Fijos, Dashboard, Detalle de producto) */
+.period-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.period-label {
+  font-family: var(--brand-font-headline);
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.duplicate-btn {
+  margin-left: 12px;
+}
+
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
 // Pill-shaped status badges (profit/loss), DESIGN.md "Status Badges & Unit Chips"
 .badge {
   display: inline-flex;

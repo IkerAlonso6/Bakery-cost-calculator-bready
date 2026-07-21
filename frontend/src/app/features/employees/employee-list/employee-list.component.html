@@ -6,10 +6,37 @@
   </button>
 </div>
 
+<div class="period-selector">
+  <button mat-icon-button (click)="previousMonth()" matTooltip="Mes anterior">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span class="period-label">{{ periodLabel() }}</span>
+  <button mat-icon-button (click)="nextMonth()" matTooltip="Mes siguiente">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  <button mat-stroked-button class="duplicate-btn" (click)="duplicatePreviousMonth()">
+    <mat-icon>content_copy</mat-icon>
+    Duplicar mes anterior
+  </button>
+</div>
+
 @if (total(); as t) {
   <mat-card class="total-card">
-    <mat-card-content>Total mensual (L): {{ t | money }}</mat-card-content>
+    <mat-card-content>Total del mes (L): {{ t | money }}</mat-card-content>
   </mat-card>
+}
+
+@if (!loading() && employees().length > 0) {
+  <mat-button-toggle-group
+    class="category-filter"
+    [value]="selectedCategory()"
+    (change)="selectedCategory.set($event.value)"
+  >
+    <mat-button-toggle value="ALL">Todas</mat-button-toggle>
+    @for (c of categories; track c.value) {
+      <mat-button-toggle [value]="c.value">{{ c.label }}</mat-button-toggle>
+    }
+  </mat-button-toggle-group>
 }
 
 @if (loading()) {
@@ -17,12 +44,17 @@
     <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
   </div>
 } @else if (employees().length === 0) {
-  <p class="empty-state">Todavía no cargaste ningún empleado.</p>
+  <p class="empty-state">Todavía no cargaste ningún empleado para {{ periodLabel() }}.</p>
 } @else {
-  <table mat-table [dataSource]="employees()" class="data-table">
+  <table mat-table [dataSource]="filteredEmployees()" class="data-table">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Nombre</th>
       <td mat-cell *matCellDef="let employee">{{ employee.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>Categoría</th>
+      <td mat-cell *matCellDef="let employee">{{ categoryLabel(employee.category) }}</td>
     </ng-container>
 
     <ng-container matColumnDef="monthlySalary">

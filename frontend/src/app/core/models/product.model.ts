@@ -25,4 +25,7 @@ export interface ProductCosting {
   price: number | null;
   realMargin: number | null;
   currency: string;
+  requestedPeriod: string; // "yyyy-MM"
+  resolvedPeriod: string; // "yyyy-MM"; distinto de requestedPeriod solo si usedFallbackPeriod
+  usedFallbackPeriod: boolean;
 }

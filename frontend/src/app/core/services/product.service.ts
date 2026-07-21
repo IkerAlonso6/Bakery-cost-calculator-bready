@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -32,9 +32,13 @@ export class ProductService {
     return this.http.put<Product>(`${this.base}/${id}/margin`, request);
   }
 
-  /** Endpoint central: desglose de costos, precio sugerido y margen real. 404/409 posibles. */
-  getPricing(id: number): Observable<ProductCosting> {
-    return this.http.get<ProductCosting>(`${this.base}/${id}/pricing`);
+  /**
+   * Endpoint central: desglose de costos, precio sugerido y margen real, para
+   * el período dado (por defecto, el mes actual). 404/409 posibles.
+   */
+  getPricing(id: number, period?: string): Observable<ProductCosting> {
+    const params = period ? new HttpParams().set('period', period) : undefined;
+    return this.http.get<ProductCosting>(`${this.base}/${id}/pricing`, { params });
   }
 
   delete(id: number): Observable<void> {

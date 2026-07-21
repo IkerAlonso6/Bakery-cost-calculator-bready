@@ -10,7 +10,26 @@
     <h1>{{ p.name }}</h1>
   </div>
 
+  <div class="period-selector">
+    <button mat-icon-button (click)="previousMonth()" matTooltip="Mes anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="period-label">{{ periodLabel() }}</span>
+    <button mat-icon-button (click)="nextMonth()" matTooltip="Mes siguiente">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
   <div class="detail-layout">
+    @if (fallbackNotice(); as notice) {
+      <mat-card class="info-banner">
+        <mat-card-content>
+          <mat-icon>info</mat-icon>
+          <span>{{ notice }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+
     @if (costingUnavailable()) {
       <mat-card class="info-banner">
         <mat-card-content>
@@ -25,15 +44,45 @@
           <mat-card-title>Costeo</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p>Materiales: {{ costing.materialCost | money }}</p>
-          <p>Mano de obra: {{ costing.laborCost | money }}</p>
-          <p>Costos fijos: {{ costing.fixedCost | money }}</p>
-          <p>Costo total: {{ costing.totalCost | money }}</p>
-          <p>Margen aplicado: {{ (costing.appliedMargin * 100).toFixed(2) }}%</p>
-          <p>Precio sugerido: {{ costing.suggestedPrice | money }}</p>
-          @if (costing.realMargin !== null) {
-            <p>Margen real: {{ (costing.realMargin * 100).toFixed(2) }}%</p>
-          }
+          <div class="costing-breakdown">
+            <div class="costing-group">
+              <p class="costing-group-title">Costo por unidad</p>
+              <div class="costing-row">
+                <span>Materiales</span>
+                <span>{{ costing.materialCost | money }}</span>
+              </div>
+              <div class="costing-row">
+                <span>Mano de obra</span>
+                <span>{{ costing.laborCost | money }}</span>
+              </div>
+              <div class="costing-row">
+                <span>Costos fijos</span>
+                <span>{{ costing.fixedCost | money }}</span>
+              </div>
+              <div class="costing-row costing-row-total">
+                <span>Costo total</span>
+                <span>{{ costing.totalCost | money }}</span>
+              </div>
+            </div>
+
+            <div class="costing-group">
+              <p class="costing-group-title">Precio</p>
+              <div class="costing-row">
+                <span>Margen aplicado</span>
+                <span>{{ (costing.appliedMargin * 100).toFixed(2) }}%</span>
+              </div>
+              <div class="costing-row">
+                <span>Precio sugerido</span>
+                <span>{{ costing.suggestedPrice | money }}</span>
+              </div>
+              @if (costing.realMargin !== null) {
+                <div class="costing-row">
+                  <span>Margen real</span>
+                  <span>{{ (costing.realMargin * 100).toFixed(2) }}%</span>
+                </div>
+              }
+            </div>
+          </div>
         </mat-card-content>
       </mat-card>
     }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -9,14 +9,15 @@ export class EmployeeService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/employees`;
 
-  getAll(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.base);
+  /** Empleados del período dado (por defecto, el mes actual). */
+  getAll(period?: string): Observable<Employee[]> {
+    return this.http.get<Employee[]>(this.base, { params: periodParams(period) });
   }
 
-  /** L: total de sueldos del mes. El backend devuelve un número plano. */
-  getTotal(): Observable<number> {
+  /** L: total de sueldos del período. El backend devuelve un número plano. */
+  getTotal(period?: string): Observable<number> {
     return this.http
-      .get(`${this.base}/total`, { responseType: 'text' })
+      .get(`${this.base}/total`, { params: periodParams(period), responseType: 'text' })
       .pipe(map((text) => parseFloat(text)));
   }
 
@@ -32,7 +33,16 @@ export class EmployeeService {
     return this.http.put<Employee>(`${this.base}/${id}`, request);
   }
 
+  /** Copia los empleados de fromPeriod hacia toPeriod (omite nombres ya existentes en toPeriod). */
+  duplicatePreviousPeriod(fromPeriod: string, toPeriod: string): Observable<Employee[]> {
+    return this.http.post<Employee[]>(`${this.base}/duplicate-previous-period`, { fromPeriod, toPeriod });
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+}
+
+function periodParams(period?: string): HttpParams | undefined {
+  return period ? new HttpParams().set('period', period) : undefined;
 }

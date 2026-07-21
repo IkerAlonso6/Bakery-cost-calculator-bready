@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -10,10 +10,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { catchError, finalize, of } from 'rxjs';
 import { Product, ProductCosting } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { MoneyPipe } from '../../../shared/pipes/money.pipe';
+import { currentPeriod, formatPeriodLabel, nextPeriod, previousPeriod } from '../../../shared/utils/period.util';
 
 @Component({
   selector: 'app-product-detail',
@@ -26,6 +28,7 @@ import { MoneyPipe } from '../../../shared/pipes/money.pipe';
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     MoneyPipe,
   ],
   templateUrl: './product-detail.component.html',
@@ -46,6 +49,13 @@ export class ProductDetailComponent {
   protected readonly costingUnavailable = signal(false);
   protected readonly savingPrice = signal(false);
   protected readonly savingMargin = signal(false);
+  protected readonly period = signal(currentPeriod());
+  protected readonly periodLabel = computed(() => formatPeriodLabel(this.period()));
+  protected readonly fallbackNotice = computed(() => {
+    const p = this.pricing();
+    if (!p?.usedFallbackPeriod) return null;
+    return `Usando datos de ${formatPeriodLabel(p.resolvedPeriod)} porque ${this.periodLabel()} no tiene gastos cargados.`;
+  });
 
   protected readonly priceForm = this.fb.nonNullable.group({
     price: [0, [Validators.required, Validators.min(0)]],
@@ -87,8 +97,9 @@ export class ProductDetailComponent {
   }
 
   private loadPricing(): void {
+    this.costingUnavailable.set(false);
     this.productService
-      .getPricing(this.productId)
+      .getPricing(this.productId, this.period())
       .pipe(
         catchError((err: HttpErrorResponse) => {
           if (err.status === 409) {
@@ -104,6 +115,16 @@ export class ProductDetailComponent {
         },
         error: () => {},
       });
+  }
+
+  previousMonth(): void {
+    this.period.set(previousPeriod(this.period()));
+    this.loadPricing();
+  }
+
+  nextMonth(): void {
+    this.period.set(nextPeriod(this.period()));
+    this.loadPricing();
   }
 
   savePrice(): void {
