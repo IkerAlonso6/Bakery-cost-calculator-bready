@@ -5,7 +5,9 @@ import com.bakery.application.exception.ProductNotFoundException;
 import com.bakery.application.mapper.ProductCostingMapper;
 import com.bakery.domain.model.CostSettings;
 import com.bakery.domain.model.Employee;
+import com.bakery.domain.model.EmployeeCategory;
 import com.bakery.domain.model.FixedCost;
+import com.bakery.domain.model.FixedCostCategory;
 import com.bakery.domain.model.Ingredient;
 import com.bakery.domain.model.Input;
 import com.bakery.domain.model.Product;
@@ -19,11 +21,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +53,9 @@ class CostingAppServiceTest {
 
     private CostingAppService costingAppService;
 
+    private static final YearMonth PERIOD = YearMonth.of(2026, 7);
+    private static final YearMonth PREVIOUS_PERIOD = YearMonth.of(2026, 6);
+
     private List<FixedCost> fixedCosts;
     private List<Employee> employees;
     private CostSettings settings;
@@ -59,15 +68,15 @@ class CostingAppServiceTest {
 
         // F = 200.000
         fixedCosts = List.of(
-                new FixedCost(1, "Gas", new BigDecimal("30000")),
-                new FixedCost(2, "Agua", new BigDecimal("10000")),
-                new FixedCost(3, "Luz", new BigDecimal("40000")),
-                new FixedCost(4, "Alquiler", new BigDecimal("120000"))
+                new FixedCost(1, "Gas", new BigDecimal("30000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(2, "Agua", new BigDecimal("10000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(3, "Luz", new BigDecimal("40000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(4, "Alquiler", new BigDecimal("120000"), FixedCostCategory.ALQUILER, PERIOD)
         );
         // L = 600.000
         employees = List.of(
-                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160")),
-                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"))
+                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD),
+                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD)
         );
         // M = 800.000, margen global 35%
         settings = new CostSettings(new BigDecimal("0.35"), new BigDecimal("800000"), "ARS");
@@ -88,10 +97,10 @@ class CostingAppServiceTest {
         Product product = new Product(1, "Bagux Tradicional", recipe, null, null);
         when(productService.getProductById(1)).thenReturn(product);
         when(costSettingsService.getSettings()).thenReturn(settings);
-        when(fixedCostService.getAllFixedCosts()).thenReturn(fixedCosts);
-        when(employeeService.getAllEmployees()).thenReturn(employees);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(fixedCosts);
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(employees);
 
-        ProductCostingDTO dto = costingAppService.getProductPricing(1);
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
 
         assertEquals(new BigDecimal("310.00"), dto.getMaterialCost());
         assertEquals(new BigDecimal("232.50"), dto.getLaborCost());
@@ -101,6 +110,9 @@ class CostingAppServiceTest {
         assertEquals("ARS", dto.getCurrency());
         assertNull(dto.getPrice());
         assertNull(dto.getRealMargin());
+        assertEquals("2026-07", dto.getRequestedPeriod());
+        assertEquals("2026-07", dto.getResolvedPeriod());
+        assertFalse(dto.isUsedFallbackPeriod());
     }
 
     @Test
@@ -109,10 +121,10 @@ class CostingAppServiceTest {
         Product product = new Product(1, "Bagux Tradicional", recipe, new BigDecimal("954"), null);
         when(productService.getProductById(1)).thenReturn(product);
         when(costSettingsService.getSettings()).thenReturn(settings);
-        when(fixedCostService.getAllFixedCosts()).thenReturn(fixedCosts);
-        when(employeeService.getAllEmployees()).thenReturn(employees);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(fixedCosts);
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(employees);
 
-        ProductCostingDTO dto = costingAppService.getProductPricing(1);
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
 
         assertEquals(new BigDecimal("954"), dto.getPrice());
         assertEquals(new BigDecimal("0.3501"), dto.getRealMargin());
@@ -124,10 +136,10 @@ class CostingAppServiceTest {
         Product product = new Product(1, "Bagux Premium", recipe, null, new BigDecimal("0.50"));
         when(productService.getProductById(1)).thenReturn(product);
         when(costSettingsService.getSettings()).thenReturn(settings);
-        when(fixedCostService.getAllFixedCosts()).thenReturn(fixedCosts);
-        when(employeeService.getAllEmployees()).thenReturn(employees);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(fixedCosts);
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(employees);
 
-        ProductCostingDTO dto = costingAppService.getProductPricing(1);
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
 
         assertEquals(new BigDecimal("0.50"), dto.getAppliedMargin());
         assertEquals(new BigDecimal("1240.00"), dto.getSuggestedPrice());
@@ -138,7 +150,7 @@ class CostingAppServiceTest {
     void getProductPricingThrowsProductNotFoundExceptionAndNeverCallsCostSettings() {
         when(productService.getProductById(99)).thenThrow(new ProductNotFoundException(99));
 
-        assertThrows(ProductNotFoundException.class, () -> costingAppService.getProductPricing(99));
+        assertThrows(ProductNotFoundException.class, () -> costingAppService.getProductPricing(99, PERIOD));
 
         verifyNoInteractions(costSettingsService, fixedCostService, employeeService);
     }
@@ -151,8 +163,81 @@ class CostingAppServiceTest {
         when(costSettingsService.getSettings())
                 .thenThrow(new IllegalStateException("Cost settings are not configured yet."));
 
-        assertThrows(IllegalStateException.class, () -> costingAppService.getProductPricing(1));
+        assertThrows(IllegalStateException.class, () -> costingAppService.getProductPricing(1, PERIOD));
 
         verifyNoInteractions(fixedCostService, employeeService);
+    }
+
+    @Test
+    @DisplayName("Sin period explícito, usa el mes actual")
+    void getProductPricingDefaultsToCurrentMonthWhenPeriodIsNull() {
+        YearMonth now = YearMonth.now();
+        Product product = new Product(1, "Bagux Tradicional", recipe, null, null);
+        when(productService.getProductById(1)).thenReturn(product);
+        when(costSettingsService.getSettings()).thenReturn(settings);
+        when(fixedCostService.getFixedCostsForPeriod(now)).thenReturn(fixedCosts);
+        when(employeeService.getEmployeesForPeriod(now)).thenReturn(employees);
+
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, null);
+
+        assertEquals(now.toString(), dto.getRequestedPeriod());
+        assertFalse(dto.isUsedFallbackPeriod());
+    }
+
+    @Test
+    @DisplayName("Mes elegido sin ningún dato propio: usa el mes anterior con datos como fallback")
+    void getProductPricingFallsBackToMostRecentPeriodWithDataWhenSelectedMonthIsEmpty() {
+        Product product = new Product(1, "Bagux Tradicional", recipe, null, null);
+        when(productService.getProductById(1)).thenReturn(product);
+        when(costSettingsService.getSettings()).thenReturn(settings);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(List.of());
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(List.of());
+        when(fixedCostService.findMostRecentPeriodWithData(PERIOD)).thenReturn(Optional.of(PREVIOUS_PERIOD));
+        when(employeeService.findMostRecentPeriodWithData(PERIOD)).thenReturn(Optional.of(PREVIOUS_PERIOD));
+        when(fixedCostService.getFixedCostsForPeriod(PREVIOUS_PERIOD)).thenReturn(fixedCosts);
+        when(employeeService.getEmployeesForPeriod(PREVIOUS_PERIOD)).thenReturn(employees);
+
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
+
+        assertEquals(new BigDecimal("620.00"), dto.getTotalCost());
+        assertEquals("2026-07", dto.getRequestedPeriod());
+        assertEquals("2026-06", dto.getResolvedPeriod());
+        assertTrue(dto.isUsedFallbackPeriod());
+    }
+
+    @Test
+    @DisplayName("Mes elegido con datos parciales (solo empleados): NO cae en fallback, usa los datos reales tal cual")
+    void getProductPricingDoesNotFallBackWhenSelectedMonthHasPartialData() {
+        Product product = new Product(1, "Bagux Tradicional", recipe, null, null);
+        when(productService.getProductById(1)).thenReturn(product);
+        when(costSettingsService.getSettings()).thenReturn(settings);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(List.of());
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(employees);
+
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
+
+        // F = 0 (no hay costos fijos propios en PERIOD), L = 600.000 (sí hay empleados propios)
+        assertEquals(new BigDecimal("232.50"), dto.getLaborCost());
+        assertEquals(new BigDecimal("0.00"), dto.getFixedCost());
+        assertEquals("2026-07", dto.getResolvedPeriod());
+        assertFalse(dto.isUsedFallbackPeriod());
+    }
+
+    @Test
+    @DisplayName("Ningún mes anterior tiene datos: sigue el cálculo con listas vacías (F=0, L=0)")
+    void getProductPricingUsesEmptyListsWhenNoPriorPeriodHasData() {
+        Product product = new Product(1, "Bagux Tradicional", recipe, null, null);
+        when(productService.getProductById(1)).thenReturn(product);
+        when(costSettingsService.getSettings()).thenReturn(settings);
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(List.of());
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(List.of());
+        when(fixedCostService.findMostRecentPeriodWithData(PERIOD)).thenReturn(Optional.empty());
+        when(employeeService.findMostRecentPeriodWithData(PERIOD)).thenReturn(Optional.empty());
+
+        ProductCostingDTO dto = costingAppService.getProductPricing(1, PERIOD);
+
+        assertEquals(new BigDecimal("310.00"), dto.getTotalCost());
+        assertFalse(dto.isUsedFallbackPeriod());
+        assertEquals("2026-07", dto.getResolvedPeriod());
     }
 }

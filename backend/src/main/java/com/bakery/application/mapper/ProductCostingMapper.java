@@ -5,14 +5,18 @@ import com.bakery.domain.model.Product;
 import com.bakery.domain.model.ProductCosting;
 import org.springframework.stereotype.Component;
 
+import java.time.YearMonth;
+
 /**
  * Convierte el resultado del costeo (ProductCosting) -> ProductCostingDTO,
- * enriquecido con datos del producto y la moneda del negocio.
+ * enriquecido con datos del producto, la moneda del negocio y el período
+ * resuelto (ver CostingAppService para la lógica de fallback entre meses).
  */
 @Component
 public class ProductCostingMapper {
 
-    public ProductCostingDTO toDto(Product product, ProductCosting costing, String currency) {
+    public ProductCostingDTO toDto(Product product, ProductCosting costing, String currency,
+                                    YearMonth requestedPeriod, YearMonth resolvedPeriod, boolean usedFallbackPeriod) {
         return new ProductCostingDTO(
                 product.getId(),
                 product.getName(),
@@ -24,7 +28,10 @@ public class ProductCostingMapper {
                 costing.getSuggestedPrice(),
                 product.getPrice().orElse(null),
                 costing.getRealMargin().orElse(null),
-                currency
+                currency,
+                requestedPeriod.toString(),
+                resolvedPeriod.toString(),
+                usedFallbackPeriod
         );
     }
 }

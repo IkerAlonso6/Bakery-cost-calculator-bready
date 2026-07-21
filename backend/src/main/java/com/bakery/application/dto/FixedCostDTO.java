@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * DTO de costo fijo mensual (gas, agua, luz, alquiler...).
+ * DTO de costo fijo mensual (gas, agua, luz, alquiler...). category es un
+ * valor fijo (ver FixedCostCategory); period es "yyyy-MM" y no se edita
+ * post-creación (ver FixedCostMapper).
  */
 @Data
 @NoArgsConstructor
@@ -21,4 +23,8 @@ public class FixedCostDTO {
     private String name;
     @NotNull @PositiveOrZero
     private BigDecimal monthlyAmount;
+    @NotBlank
+    private String category;
+    @NotBlank
+    private String period;
 }

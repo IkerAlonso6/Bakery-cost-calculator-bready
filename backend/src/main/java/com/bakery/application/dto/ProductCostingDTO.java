@@ -12,6 +12,9 @@ import java.math.BigDecimal;
  *
  * - price y realMargin son null si el producto no tiene precio manual fijado.
  * - appliedMargin es el margen usado para el precio sugerido (override o global).
+ * - requestedPeriod es el mes pedido (o el actual si no se especificó); resolvedPeriod
+ *   es el mes de donde realmente vinieron los costos fijos/sueldos usados en el cálculo.
+ *   Difieren solo cuando usedFallbackPeriod es true (mes pedido sin datos propios).
  */
 @Data
 @NoArgsConstructor
@@ -28,4 +31,7 @@ public class ProductCostingDTO {
     private BigDecimal price;
     private BigDecimal realMargin;
     private String currency;
+    private String requestedPeriod;
+    private String resolvedPeriod;
+    private boolean usedFallbackPeriod;
 }

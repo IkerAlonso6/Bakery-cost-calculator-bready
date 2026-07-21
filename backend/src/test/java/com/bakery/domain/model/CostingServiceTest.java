@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * El caso principal reproduce el ejemplo numérico de docs/COSTING_MODEL.md, sección 4.
  */
 class CostingServiceTest {
+
+    private static final YearMonth PERIOD = YearMonth.of(2026, 7);
 
     private CostingService costingService;
     private List<FixedCost> fixedCosts;
@@ -29,16 +32,16 @@ class CostingServiceTest {
 
         // Parámetros del mes (COSTING_MODEL.md, sección 4): F = 200.000
         fixedCosts = List.of(
-                new FixedCost(1, "Gas", new BigDecimal("30000")),
-                new FixedCost(2, "Agua", new BigDecimal("10000")),
-                new FixedCost(3, "Luz", new BigDecimal("40000")),
-                new FixedCost(4, "Alquiler", new BigDecimal("120000"))
+                new FixedCost(1, "Gas", new BigDecimal("30000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(2, "Agua", new BigDecimal("10000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(3, "Luz", new BigDecimal("40000"), FixedCostCategory.SERVICIOS, PERIOD),
+                new FixedCost(4, "Alquiler", new BigDecimal("120000"), FixedCostCategory.ALQUILER, PERIOD)
         );
 
         // L = 600.000
         employees = List.of(
-                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160")),
-                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"))
+                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD),
+                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD)
         );
 
         // M = 800.000, margen global 35%

@@ -1,10 +1,12 @@
 package com.bakery.web.controller;
 
+import com.bakery.application.dto.DuplicatePreviousPeriodRequest;
 import com.bakery.application.dto.EmployeeDTO;
 import com.bakery.application.exception.EmployeeNotFoundException;
 import com.bakery.application.mapper.EmployeeMapper;
 import com.bakery.application.service.EmployeeService;
 import com.bakery.domain.model.Employee;
+import com.bakery.domain.model.EmployeeCategory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class EmployeeControllerTest {
 
+    private static final YearMonth PERIOD = YearMonth.of(2026, 7);
+    private static final YearMonth PREVIOUS_PERIOD = YearMonth.of(2026, 6);
+
     @MockBean
     private JwtService jwtService;
 
@@ -57,7 +63,8 @@ class EmployeeControllerTest {
 
     @BeforeEach
     void setUp() {
-        employeeDTO = new EmployeeDTO(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"), new BigDecimal("2500.00"));
+        employeeDTO = new EmployeeDTO(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"),
+                "PRODUCCION", "2026-07", new BigDecimal("2500.00"));
     }
 
     @Test
@@ -74,7 +81,8 @@ class EmployeeControllerTest {
     @Test
     @DisplayName("POST /api/employees con name en blanco devuelve 400")
     void createReturns400WhenNameBlank() throws Exception {
-        EmployeeDTO invalid = new EmployeeDTO(null, " ", new BigDecimal("400000"), new BigDecimal("160"), null);
+        EmployeeDTO invalid = new EmployeeDTO(null, " ", new BigDecimal("400000"), new BigDecimal("160"),
+                "PRODUCCION", "2026-07", null);
 
         mockMvc.perform(post("/api/employees")
                         .contentType("application/json")
@@ -85,7 +93,8 @@ class EmployeeControllerTest {
     @Test
     @DisplayName("POST /api/employees con monthlySalary negativo devuelve 400")
     void createReturns400WhenMonthlySalaryNegative() throws Exception {
-        EmployeeDTO invalid = new EmployeeDTO(null, "Panadero", new BigDecimal("-1"), new BigDecimal("160"), null);
+        EmployeeDTO invalid = new EmployeeDTO(null, "Panadero", new BigDecimal("-1"), new BigDecimal("160"),
+                "PRODUCCION", "2026-07", null);
 
         mockMvc.perform(post("/api/employees")
                         .contentType("application/json")
@@ -96,7 +105,8 @@ class EmployeeControllerTest {
     @Test
     @DisplayName("POST /api/employees con monthlyHours no positivo devuelve 400")
     void createReturns400WhenMonthlyHoursNotPositive() throws Exception {
-        EmployeeDTO invalid = new EmployeeDTO(null, "Panadero", new BigDecimal("400000"), BigDecimal.ZERO, null);
+        EmployeeDTO invalid = new EmployeeDTO(null, "Panadero", new BigDecimal("400000"), BigDecimal.ZERO,
+                "PRODUCCION", "2026-07", null);
 
         mockMvc.perform(post("/api/employees")
                         .contentType("application/json")
@@ -105,8 +115,21 @@ class EmployeeControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/employees devuelve 200 con la lista")
+    @DisplayName("POST /api/employees con category en blanco devuelve 400")
+    void createReturns400WhenCategoryBlank() throws Exception {
+        EmployeeDTO invalid = new EmployeeDTO(null, "Panadero", new BigDecimal("400000"), new BigDecimal("160"),
+                " ", "2026-07", null);
+
+        mockMvc.perform(post("/api/employees")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /api/employees devuelve 200 con la lista del período (default: mes actual)")
     void getAllReturns200WithList() throws Exception {
+        when(employeeService.getEmployeesForPeriod(any())).thenReturn(List.of());
         when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDTO));
 
         mockMvc.perform(get("/api/employees"))
@@ -114,9 +137,21 @@ class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/employees?period=2026-07 filtra por el período pedido")
+    void getAllWithPeriodParamUsesRequestedPeriod() throws Exception {
+        when(employeeService.getEmployeesForPeriod(PERIOD)).thenReturn(List.of());
+        when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDTO));
+
+        mockMvc.perform(get("/api/employees").param("period", "2026-07"))
+                .andExpect(status().isOk());
+
+        verify(employeeService).getEmployeesForPeriod(PERIOD);
+    }
+
+    @Test
     @DisplayName("GET /api/employees/total devuelve 200 con el número plano")
     void getMonthlyTotalReturns200WithPlainNumber() throws Exception {
-        when(employeeService.getMonthlyTotal()).thenReturn(new BigDecimal("600000"));
+        when(employeeService.getMonthlyTotal(any())).thenReturn(new BigDecimal("600000"));
 
         mockMvc.perform(get("/api/employees/total"))
                 .andExpect(status().isOk())
@@ -142,15 +177,21 @@ class EmployeeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /api/employees/{id} llama primero a updateEmployeeSalary y luego a updateEmployeeHours")
-    void updateReturns200AndCallsSalaryThenHoursInOrder() throws Exception {
-        Employee afterSalary = new Employee(1, "Panadero", new BigDecimal("450000"), new BigDecimal("160"));
-        Employee afterHours = new Employee(1, "Panadero", new BigDecimal("450000"), new BigDecimal("180"));
+    @DisplayName("PUT /api/employees/{id} llama a updateEmployeeSalary, updateEmployeeHours y updateEmployeeCategory en orden")
+    void updateReturns200AndCallsSalaryThenHoursThenCategoryInOrder() throws Exception {
+        Employee afterSalary = new Employee(1, "Panadero", new BigDecimal("450000"), new BigDecimal("160"),
+                EmployeeCategory.PRODUCCION, PERIOD);
+        Employee afterHours = new Employee(1, "Panadero", new BigDecimal("450000"), new BigDecimal("180"),
+                EmployeeCategory.PRODUCCION, PERIOD);
+        Employee afterCategory = new Employee(1, "Panadero", new BigDecimal("450000"), new BigDecimal("180"),
+                EmployeeCategory.ADMINISTRACION, PERIOD);
         when(employeeService.updateEmployeeSalary(eq(1), any())).thenReturn(afterSalary);
         when(employeeService.updateEmployeeHours(eq(1), any())).thenReturn(afterHours);
-        when(employeeMapper.toDto(afterHours)).thenReturn(employeeDTO);
+        when(employeeService.updateEmployeeCategory(eq(1), any())).thenReturn(afterCategory);
+        when(employeeMapper.toDto(afterCategory)).thenReturn(employeeDTO);
 
-        EmployeeDTO requestDto = new EmployeeDTO(null, "Panadero", new BigDecimal("450000"), new BigDecimal("180"), null);
+        EmployeeDTO requestDto = new EmployeeDTO(null, "Panadero", new BigDecimal("450000"), new BigDecimal("180"),
+                "ADMINISTRACION", "2026-07", null);
 
         mockMvc.perform(put("/api/employees/1")
                         .contentType("application/json")
@@ -160,13 +201,15 @@ class EmployeeControllerTest {
         InOrder order = inOrder(employeeService);
         order.verify(employeeService).updateEmployeeSalary(1, new BigDecimal("450000"));
         order.verify(employeeService).updateEmployeeHours(1, new BigDecimal("180"));
-        verify(employeeMapper).toDto(afterHours);
+        order.verify(employeeService).updateEmployeeCategory(1, EmployeeCategory.ADMINISTRACION);
+        verify(employeeMapper).toDto(afterCategory);
     }
 
     @Test
     @DisplayName("PUT /api/employees/{id} con monthlySalary negativo devuelve 400")
     void updateReturns400WhenMonthlySalaryNegative() throws Exception {
-        EmployeeDTO invalid = new EmployeeDTO(1, "Panadero", new BigDecimal("-1"), new BigDecimal("160"), null);
+        EmployeeDTO invalid = new EmployeeDTO(1, "Panadero", new BigDecimal("-1"), new BigDecimal("160"),
+                "PRODUCCION", "2026-07", null);
 
         mockMvc.perform(put("/api/employees/1")
                         .contentType("application/json")
@@ -175,7 +218,7 @@ class EmployeeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /api/employees/{id} devuelve 404 si falla la actualización del sueldo y nunca actualiza horas")
+    @DisplayName("PUT /api/employees/{id} devuelve 404 si falla la actualización del sueldo y nunca actualiza horas ni categoría")
     void updateReturns404WhenEmployeeNotFoundOnSalaryUpdate() throws Exception {
         when(employeeService.updateEmployeeSalary(eq(99), any())).thenThrow(new EmployeeNotFoundException(99));
 
@@ -185,6 +228,23 @@ class EmployeeControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(employeeService, never()).updateEmployeeHours(any(), any());
+        verify(employeeService, never()).updateEmployeeCategory(any(), any());
+    }
+
+    @Test
+    @DisplayName("POST /api/employees/duplicate-previous-period copia los empleados del mes anterior")
+    void duplicatePreviousPeriodReturns200WithCreatedList() throws Exception {
+        when(employeeService.duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD)).thenReturn(List.of());
+        when(employeeMapper.toDtoList(any())).thenReturn(List.of(employeeDTO));
+
+        DuplicatePreviousPeriodRequest request = new DuplicatePreviousPeriodRequest("2026-06", "2026-07");
+
+        mockMvc.perform(post("/api/employees/duplicate-previous-period")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        verify(employeeService).duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD);
     }
 
     @Test

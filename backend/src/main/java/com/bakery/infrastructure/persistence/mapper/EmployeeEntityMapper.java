@@ -1,8 +1,11 @@
 package com.bakery.infrastructure.persistence.mapper;
 
 import com.bakery.domain.model.Employee;
+import com.bakery.domain.model.EmployeeCategory;
 import com.bakery.infrastructure.persistence.entity.EmployeeEntity;
 import org.springframework.stereotype.Component;
+
+import java.time.YearMonth;
 
 /**
  * Convierte Employee (dominio) <-> EmployeeEntity.
@@ -15,7 +18,9 @@ public class EmployeeEntityMapper {
                 employee.getId(),
                 employee.getName(),
                 employee.getMonthlySalary(),
-                employee.getMonthlyHours().orElse(null)
+                employee.getMonthlyHours().orElse(null),
+                employee.getCategory().name(),
+                employee.getPeriod().atDay(1)
         );
     }
 
@@ -24,7 +29,9 @@ public class EmployeeEntityMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getMonthlySalary(),
-                entity.getMonthlyHours()
+                entity.getMonthlyHours(),
+                EmployeeCategory.valueOf(entity.getCategory()),
+                YearMonth.from(entity.getPeriod())
         );
     }
 }

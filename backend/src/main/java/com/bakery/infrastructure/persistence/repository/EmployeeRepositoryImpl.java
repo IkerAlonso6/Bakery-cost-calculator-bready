@@ -9,6 +9,7 @@ import com.bakery.infrastructure.persistence.mapper.EmployeeEntityMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,9 +48,16 @@ public class EmployeeRepositoryImpl implements IEmployeeRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Employee> findAll() {
-        return jpaRepository.findByUserId(currentUserProvider.getCurrentUserId())
+    public List<Employee> findByPeriod(YearMonth period) {
+        return jpaRepository.findByUserIdAndPeriod(currentUserProvider.getCurrentUserId(), period.atDay(1))
                 .stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<YearMonth> findMostRecentPeriodWithDataUpTo(YearMonth period) {
+        return jpaRepository.findMostRecentPeriodWithDataUpTo(currentUserProvider.getCurrentUserId(), period.atDay(1))
+                .map(YearMonth::from);
     }
 
     @Override

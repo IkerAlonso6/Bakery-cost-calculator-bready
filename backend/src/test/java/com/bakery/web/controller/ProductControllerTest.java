@@ -219,21 +219,38 @@ class ProductControllerTest {
         ProductCostingDTO pricingDTO = new ProductCostingDTO(
                 1, "Bagux Tradicional",
                 new BigDecimal("310.00"), new BigDecimal("232.50"), new BigDecimal("77.50"), new BigDecimal("620.00"),
-                new BigDecimal("0.35"), new BigDecimal("953.85"), null, null, "ARS");
-        when(costingAppService.getProductPricing(1)).thenReturn(pricingDTO);
+                new BigDecimal("0.35"), new BigDecimal("953.85"), null, null, "ARS",
+                "2026-07", "2026-07", false);
+        when(costingAppService.getProductPricing(1, null)).thenReturn(pricingDTO);
 
         mockMvc.perform(get("/api/products/1/pricing"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.suggestedPrice").value(953.85));
 
-        verify(costingAppService).getProductPricing(1);
+        verify(costingAppService).getProductPricing(1, null);
         verifyNoInteractions(productService);
+    }
+
+    @Test
+    @DisplayName("GET /api/products/{id}/pricing?period=2026-06 delega el período pedido")
+    void getPricingWithPeriodParamDelegatesRequestedPeriod() throws Exception {
+        ProductCostingDTO pricingDTO = new ProductCostingDTO(
+                1, "Bagux Tradicional",
+                new BigDecimal("310.00"), new BigDecimal("232.50"), new BigDecimal("77.50"), new BigDecimal("620.00"),
+                new BigDecimal("0.35"), new BigDecimal("953.85"), null, null, "ARS",
+                "2026-06", "2026-06", false);
+        when(costingAppService.getProductPricing(eq(1), eq(java.time.YearMonth.of(2026, 6)))).thenReturn(pricingDTO);
+
+        mockMvc.perform(get("/api/products/1/pricing").param("period", "2026-06"))
+                .andExpect(status().isOk());
+
+        verify(costingAppService).getProductPricing(1, java.time.YearMonth.of(2026, 6));
     }
 
     @Test
     @DisplayName("GET /api/products/{id}/pricing devuelve 404 si el producto no existe")
     void getPricingReturns404WhenProductNotFound() throws Exception {
-        when(costingAppService.getProductPricing(99)).thenThrow(new ProductNotFoundException(99));
+        when(costingAppService.getProductPricing(99, null)).thenThrow(new ProductNotFoundException(99));
 
         mockMvc.perform(get("/api/products/99/pricing"))
                 .andExpect(status().isNotFound());
@@ -242,7 +259,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("GET /api/products/{id}/pricing devuelve 409 si la configuración de costeo no está lista")
     void getPricingReturns409WhenCostSettingsNotConfigured() throws Exception {
-        when(costingAppService.getProductPricing(1))
+        when(costingAppService.getProductPricing(1, null))
                 .thenThrow(new IllegalStateException("Cost settings are not configured yet."));
 
         mockMvc.perform(get("/api/products/1/pricing"))

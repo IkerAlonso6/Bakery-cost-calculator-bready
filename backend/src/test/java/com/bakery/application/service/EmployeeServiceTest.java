@@ -3,6 +3,7 @@ package com.bakery.application.service;
 import com.bakery.application.exception.EmployeeNotFoundException;
 import com.bakery.application.port.IEmployeeRepository;
 import com.bakery.domain.model.Employee;
+import com.bakery.domain.model.EmployeeCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
+    private static final YearMonth PERIOD = YearMonth.of(2026, 7);
+    private static final YearMonth PREVIOUS_PERIOD = YearMonth.of(2026, 6);
+
     @Mock
     private IEmployeeRepository employeeRepository;
 
@@ -36,7 +41,8 @@ class EmployeeServiceTest {
 
     @BeforeEach
     void setUp() {
-        panadero = new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"));
+        panadero = new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"),
+                EmployeeCategory.PRODUCCION, PERIOD);
     }
 
     @Test
@@ -44,7 +50,8 @@ class EmployeeServiceTest {
     void createEmployeeSavesAndReturns() {
         when(employeeRepository.save(any(Employee.class))).thenReturn(panadero);
 
-        Employee created = employeeService.createEmployee("Panadero", new BigDecimal("400000"), new BigDecimal("160"));
+        Employee created = employeeService.createEmployee(
+                "Panadero", new BigDecimal("400000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD);
 
         assertEquals(panadero, created);
     }
@@ -66,11 +73,11 @@ class EmployeeServiceTest {
     }
 
     @Test
-    @DisplayName("Devuelve todos los empleados del repositorio")
-    void getAllEmployeesReturnsRepositoryList() {
-        when(employeeRepository.findAll()).thenReturn(List.of(panadero));
+    @DisplayName("Devuelve los empleados del período pedido")
+    void getEmployeesForPeriodReturnsRepositoryList() {
+        when(employeeRepository.findByPeriod(PERIOD)).thenReturn(List.of(panadero));
 
-        assertEquals(1, employeeService.getAllEmployees().size());
+        assertEquals(1, employeeService.getEmployeesForPeriod(PERIOD).size());
     }
 
     @Test
@@ -127,6 +134,17 @@ class EmployeeServiceTest {
     }
 
     @Test
+    @DisplayName("Actualiza la categoría de un empleado y la guarda")
+    void updateEmployeeCategoryUpdatesAndSaves() {
+        when(employeeRepository.findById(1)).thenReturn(Optional.of(panadero));
+        when(employeeRepository.save(panadero)).thenReturn(panadero);
+
+        Employee updated = employeeService.updateEmployeeCategory(1, EmployeeCategory.ADMINISTRACION);
+
+        assertEquals(EmployeeCategory.ADMINISTRACION, updated.getCategory());
+    }
+
+    @Test
     @DisplayName("Elimina un empleado existente")
     void deleteEmployeeDeletesWhenExists() {
         when(employeeRepository.findById(1)).thenReturn(Optional.of(panadero));
@@ -146,26 +164,62 @@ class EmployeeServiceTest {
     }
 
     @Test
-    @DisplayName("getMonthlyTotal suma todos los sueldos (L = 600.000)")
+    @DisplayName("getMonthlyTotal suma todos los sueldos del período (L = 600.000)")
     void getMonthlyTotalSumsAllSalaries() {
         List<Employee> employees = List.of(
-                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160")),
-                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"))
+                new Employee(1, "Panadero", new BigDecimal("400000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD),
+                new Employee(2, "Ayudante", new BigDecimal("200000"), new BigDecimal("160"), EmployeeCategory.PRODUCCION, PERIOD)
         );
-        when(employeeRepository.findAll()).thenReturn(employees);
+        when(employeeRepository.findByPeriod(PERIOD)).thenReturn(employees);
 
-        BigDecimal total = employeeService.getMonthlyTotal();
+        BigDecimal total = employeeService.getMonthlyTotal(PERIOD);
 
         assertEquals(0, new BigDecimal("600000").compareTo(total));
     }
 
     @Test
-    @DisplayName("getMonthlyTotal devuelve cero si no hay empleados")
+    @DisplayName("getMonthlyTotal devuelve cero si no hay empleados en el período")
     void getMonthlyTotalReturnsZeroWhenListIsEmpty() {
-        when(employeeRepository.findAll()).thenReturn(List.of());
+        when(employeeRepository.findByPeriod(PERIOD)).thenReturn(List.of());
 
-        BigDecimal total = employeeService.getMonthlyTotal();
+        BigDecimal total = employeeService.getMonthlyTotal(PERIOD);
 
         assertEquals(0, BigDecimal.ZERO.compareTo(total));
+    }
+
+    @Test
+    @DisplayName("findMostRecentPeriodWithData delega en el repositorio")
+    void findMostRecentPeriodWithDataDelegatesToRepository() {
+        when(employeeRepository.findMostRecentPeriodWithDataUpTo(PERIOD)).thenReturn(Optional.of(PREVIOUS_PERIOD));
+
+        assertEquals(Optional.of(PREVIOUS_PERIOD), employeeService.findMostRecentPeriodWithData(PERIOD));
+    }
+
+    @Test
+    @DisplayName("duplicateFromPreviousPeriod copia los empleados del mes anterior al mes destino")
+    void duplicateFromPreviousPeriodCopiesRowsToTargetPeriod() {
+        when(employeeRepository.findByPeriod(PREVIOUS_PERIOD)).thenReturn(List.of(panadero));
+        when(employeeRepository.findByPeriod(PERIOD)).thenReturn(List.of());
+        when(employeeRepository.save(any(Employee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<Employee> created = employeeService.duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD);
+
+        assertEquals(1, created.size());
+        assertEquals(PERIOD, created.get(0).getPeriod());
+        assertEquals("Panadero", created.get(0).getName());
+    }
+
+    @Test
+    @DisplayName("duplicateFromPreviousPeriod omite nombres que ya existen en el período destino")
+    void duplicateFromPreviousPeriodSkipsExistingNamesInTargetPeriod() {
+        Employee alreadyInTarget = new Employee(2, "Panadero", new BigDecimal("420000"), null,
+                EmployeeCategory.PRODUCCION, PERIOD);
+        when(employeeRepository.findByPeriod(PREVIOUS_PERIOD)).thenReturn(List.of(panadero));
+        when(employeeRepository.findByPeriod(PERIOD)).thenReturn(List.of(alreadyInTarget));
+
+        List<Employee> created = employeeService.duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD);
+
+        assertTrue(created.isEmpty());
+        verify(employeeRepository, never()).save(any());
     }
 }

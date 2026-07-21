@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -69,12 +71,16 @@ public class ProductController {
 
     /**
      * Endpoint central del sistema: costo total desglosado (materiales +
-     * mano de obra + fijos), precio sugerido y margen real.
+     * mano de obra + fijos), precio sugerido y margen real, para el período
+     * dado (por defecto, el mes actual; ver CostingAppService para el
+     * fallback cuando el mes elegido no tiene datos propios).
      * Ver docs/COSTING_MODEL.md.
      */
     @GetMapping("/{id}/pricing")
-    public ProductCostingDTO getPricing(@PathVariable Integer id) {
-        return costingAppService.getProductPricing(id);
+    public ProductCostingDTO getPricing(@PathVariable Integer id,
+                                        @RequestParam(required = false) String period) {
+        YearMonth parsedPeriod = period != null ? YearMonth.parse(period) : null;
+        return costingAppService.getProductPricing(id, parsedPeriod);
     }
 
     @DeleteMapping("/{id}")

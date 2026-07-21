@@ -1,5 +1,6 @@
 package com.bakery.web.controller;
 
+import com.bakery.application.dto.DuplicatePreviousPeriodRequest;
 import com.bakery.application.dto.FixedCostDTO;
 import com.bakery.application.exception.FixedCostNotFoundException;
 import com.bakery.application.mapper.FixedCostMapper;
@@ -16,11 +17,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(FixedCostController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class FixedCostControllerTest {
+
+    private static final YearMonth PERIOD = YearMonth.of(2026, 7);
+    private static final YearMonth PREVIOUS_PERIOD = YearMonth.of(2026, 6);
 
     @MockBean
     private JwtService jwtService;
@@ -52,7 +58,7 @@ class FixedCostControllerTest {
 
     @BeforeEach
     void setUp() {
-        fixedCostDTO = new FixedCostDTO(1, "Gas", new BigDecimal("30000"));
+        fixedCostDTO = new FixedCostDTO(1, "Gas", new BigDecimal("30000"), "SERVICIOS", "2026-07");
     }
 
     @Test
@@ -69,7 +75,7 @@ class FixedCostControllerTest {
     @Test
     @DisplayName("POST /api/fixed-costs con name en blanco devuelve 400")
     void createReturns400WhenNameBlank() throws Exception {
-        FixedCostDTO invalid = new FixedCostDTO(null, " ", new BigDecimal("100"));
+        FixedCostDTO invalid = new FixedCostDTO(null, " ", new BigDecimal("100"), "SERVICIOS", "2026-07");
 
         mockMvc.perform(post("/api/fixed-costs")
                         .contentType("application/json")
@@ -80,7 +86,7 @@ class FixedCostControllerTest {
     @Test
     @DisplayName("POST /api/fixed-costs con monthlyAmount negativo devuelve 400")
     void createReturns400WhenMonthlyAmountNegative() throws Exception {
-        FixedCostDTO invalid = new FixedCostDTO(null, "Gas", new BigDecimal("-1"));
+        FixedCostDTO invalid = new FixedCostDTO(null, "Gas", new BigDecimal("-1"), "SERVICIOS", "2026-07");
 
         mockMvc.perform(post("/api/fixed-costs")
                         .contentType("application/json")
@@ -89,8 +95,20 @@ class FixedCostControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/fixed-costs devuelve 200 con la lista")
+    @DisplayName("POST /api/fixed-costs con category en blanco devuelve 400")
+    void createReturns400WhenCategoryBlank() throws Exception {
+        FixedCostDTO invalid = new FixedCostDTO(null, "Gas", new BigDecimal("100"), " ", "2026-07");
+
+        mockMvc.perform(post("/api/fixed-costs")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /api/fixed-costs devuelve 200 con la lista del período (default: mes actual)")
     void getAllReturns200WithList() throws Exception {
+        when(fixedCostService.getFixedCostsForPeriod(any())).thenReturn(List.of());
         when(fixedCostMapper.toDtoList(any())).thenReturn(List.of(fixedCostDTO));
 
         mockMvc.perform(get("/api/fixed-costs"))
@@ -98,9 +116,21 @@ class FixedCostControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/fixed-costs?period=2026-07 filtra por el período pedido")
+    void getAllWithPeriodParamUsesRequestedPeriod() throws Exception {
+        when(fixedCostService.getFixedCostsForPeriod(PERIOD)).thenReturn(List.of());
+        when(fixedCostMapper.toDtoList(any())).thenReturn(List.of(fixedCostDTO));
+
+        mockMvc.perform(get("/api/fixed-costs").param("period", "2026-07"))
+                .andExpect(status().isOk());
+
+        verify(fixedCostService).getFixedCostsForPeriod(PERIOD);
+    }
+
+    @Test
     @DisplayName("GET /api/fixed-costs/total devuelve 200 con el número plano (no colisiona con /{id})")
     void getMonthlyTotalReturns200WithPlainNumber() throws Exception {
-        when(fixedCostService.getMonthlyTotal()).thenReturn(new BigDecimal("200000"));
+        when(fixedCostService.getMonthlyTotal(any())).thenReturn(new BigDecimal("200000"));
 
         mockMvc.perform(get("/api/fixed-costs/total"))
                 .andExpect(status().isOk())
@@ -139,7 +169,7 @@ class FixedCostControllerTest {
     @Test
     @DisplayName("PUT /api/fixed-costs/{id} con monthlyAmount negativo devuelve 400")
     void updateReturns400WhenMonthlyAmountNegative() throws Exception {
-        FixedCostDTO invalid = new FixedCostDTO(1, "Gas", new BigDecimal("-1"));
+        FixedCostDTO invalid = new FixedCostDTO(1, "Gas", new BigDecimal("-1"), "SERVICIOS", "2026-07");
 
         mockMvc.perform(put("/api/fixed-costs/1")
                         .contentType("application/json")
@@ -156,6 +186,22 @@ class FixedCostControllerTest {
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(fixedCostDTO)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("POST /api/fixed-costs/duplicate-previous-period copia los costos fijos del mes anterior")
+    void duplicatePreviousPeriodReturns200WithCreatedList() throws Exception {
+        when(fixedCostService.duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD)).thenReturn(List.of());
+        when(fixedCostMapper.toDtoList(any())).thenReturn(List.of(fixedCostDTO));
+
+        DuplicatePreviousPeriodRequest request = new DuplicatePreviousPeriodRequest("2026-06", "2026-07");
+
+        mockMvc.perform(post("/api/fixed-costs/duplicate-previous-period")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        verify(fixedCostService).duplicateFromPreviousPeriod(PREVIOUS_PERIOD, PERIOD);
     }
 
     @Test
