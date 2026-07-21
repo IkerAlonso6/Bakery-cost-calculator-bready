@@ -103,7 +103,7 @@ Leyenda: ⏳ Pendiente · 🔨 En progreso · ✅ Completado
 
 - [x] Tickets 001–032 completados
 - [x] Compila sin errores (`mvn test`, JDK 17+; ver nota de entorno abajo)
-- [ ] Migración Flyway aplicada (tablas + seeds, incluida cost_settings) — pendiente de verificar contra PostgreSQL real
+- [x] Migración Flyway aplicada (tablas + seeds, incluida cost_settings) — verificado contra PostgreSQL real (2026-07-21): V1 + V2 aplican limpio, `hibernate.ddl-auto=validate` sin discrepancias
 - [x] DTOs con validaciones
 - [x] Servicios con manejo de excepciones (verificado con tests, TICKET-034)
 - [x] Controllers con códigos HTTP correctos (verificado con tests, TICKET-035)
