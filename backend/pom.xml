@@ -15,6 +15,9 @@
     <description>Bakery Cost Calculator Backend</description>
     <properties>
         <java.version>11</java.version>
+        <!-- Spring Boot 2.7.15 gestiona Lombok 1.18.28, que no soporta las APIs internas
+             de javac de JDK 21+ (falla con NoSuchFieldError sobre JCTree$JCImport al compilar). -->
+        <lombok.version>1.18.36</lombok.version>
     </properties>
     <dependencies>
         <dependency>
