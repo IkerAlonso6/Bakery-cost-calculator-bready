@@ -11,7 +11,8 @@
   <mat-sidenav
     #sidenav
     [mode]="isHandset() ? 'over' : 'side'"
-    [opened]="!isHandset()"
+    [opened]="sidenavOpened()"
+    (openedChange)="sidenavOpened.set($event)"
     class="shell-sidenav"
   >
     <div class="shell-brand">
@@ -68,6 +69,16 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="shell-content">
+    @if (!isHandset() && !sidenavOpened()) {
+      <button
+        mat-icon-button
+        class="shell-reopen-btn"
+        (click)="sidenav.open()"
+        aria-label="Abrir menú"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

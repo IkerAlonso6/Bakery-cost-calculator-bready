@@ -158,6 +158,12 @@
   }
 }
 
+.shell-reopen-btn {
+  margin-bottom: 12px;
+  background-color: var(--mat-sys-surface-container-lowest);
+  border: 1px solid rgba(135, 115, 105, 0.2);
+}
+
 .active-nav-item {
   background-color: var(--mat-sys-secondary-container) !important;
   color: var(--mat-sys-on-secondary-container) !important;

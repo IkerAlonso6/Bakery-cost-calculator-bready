@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -44,6 +44,21 @@ export class ShellComponent {
     this.breakpointObserver.observe(Breakpoints.Handset).pipe(map((result) => result.matches)),
     { initialValue: false },
   );
+
+  /**
+   * Estado del sidenav. mat-sidenav se cierra solo con Escape o el backdrop
+   * (aun en modo "side"), así que necesita [opened]/(openedChange) explícito
+   * -- NO el atajo [(opened)]="sidenavOpened", que le pasa la función del
+   * signal en vez de su valor y nunca sincroniza el cierre -- para poder
+   * reabrirlo después. Se resetea al valor por defecto de cada modo al
+   * cruzar el breakpoint, sin pisar un toggle manual mientras el modo no
+   * cambia.
+   */
+  protected readonly sidenavOpened = signal(!this.isHandset());
+
+  constructor() {
+    effect(() => this.sidenavOpened.set(!this.isHandset()));
+  }
 
   logout(): void {
     this.authService.logout();
