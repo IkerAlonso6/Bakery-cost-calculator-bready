@@ -35,9 +35,9 @@ export class ProfilePageComponent {
   protected readonly loading = signal(true);
   protected readonly savingName = signal(false);
   protected readonly uploadingPhoto = signal(false);
+  protected readonly deletingPhoto = signal(false);
   protected readonly user = signal<User | null>(null);
-  /** Cambia para forzar la recarga del avatar tras subir una foto nueva. */
-  protected readonly photoVersion = signal(Date.now());
+  protected readonly avatarUrl = this.authService.avatarUrl;
 
   protected readonly form = this.fb.nonNullable.group({
     displayName: ['', [Validators.required]],
@@ -45,11 +45,6 @@ export class ProfilePageComponent {
 
   constructor() {
     this.load();
-  }
-
-  protected avatarUrl(): string | null {
-    const u = this.user();
-    return u?.hasPhoto ? this.profileService.photoUrl(this.photoVersion()) : null;
   }
 
   protected initials(): string {
@@ -109,11 +104,29 @@ export class ProfilePageComponent {
             this.user.set(updated);
             this.authService.setUser(updated);
           }
-          this.photoVersion.set(Date.now());
           this.snackBar.open('Foto actualizada', 'Cerrar', { duration: 3000 });
         },
         error: () => {},
       });
     input.value = '';
+  }
+
+  deletePhoto(): void {
+    this.deletingPhoto.set(true);
+    this.profileService
+      .deletePhoto()
+      .pipe(finalize(() => this.deletingPhoto.set(false)))
+      .subscribe({
+        next: () => {
+          const current = this.user();
+          if (current) {
+            const updated = { ...current, hasPhoto: false };
+            this.user.set(updated);
+            this.authService.setUser(updated);
+          }
+          this.snackBar.open('Foto eliminada', 'Cerrar', { duration: 3000 });
+        },
+        error: () => {},
+      });
   }
 }

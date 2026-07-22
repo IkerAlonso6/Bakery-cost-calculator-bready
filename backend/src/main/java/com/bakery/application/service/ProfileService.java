@@ -49,6 +49,10 @@ public class ProfileService {
         return userRepository.findPhoto(currentUserProvider.getCurrentUserId());
     }
 
+    public void deletePhoto() {
+        userRepository.deletePhoto(currentUserProvider.getCurrentUserId());
+    }
+
     private User loadCurrent() {
         Integer userId = currentUserProvider.getCurrentUserId();
         return userRepository.findById(userId)

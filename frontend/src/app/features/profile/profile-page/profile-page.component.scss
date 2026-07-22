@@ -58,6 +58,12 @@
   align-items: flex-start;
 }
 
+.profile-avatar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .profile-email {
   margin: 0;
   font-size: 13px;

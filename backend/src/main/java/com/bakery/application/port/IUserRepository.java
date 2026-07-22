@@ -22,6 +22,8 @@ public interface IUserRepository {
 
     void updatePhoto(Integer userId, byte[] photo, String contentType);
 
+    void deletePhoto(Integer userId);
+
     /** Devuelve la foto (bytes + content-type) si existe. */
     Optional<StoredPhoto> findPhoto(Integer userId);
 

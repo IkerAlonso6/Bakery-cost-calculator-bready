@@ -14,14 +14,32 @@
           }
         </div>
         <div class="profile-avatar-actions">
-          <button mat-stroked-button type="button" (click)="photoInput.click()" [disabled]="uploadingPhoto()">
-            @if (uploadingPhoto()) {
-              <mat-spinner diameter="18" />
-            } @else {
-              <mat-icon>photo_camera</mat-icon>
+          <div class="profile-avatar-buttons">
+            <button mat-stroked-button type="button" (click)="photoInput.click()" [disabled]="uploadingPhoto()">
+              @if (uploadingPhoto()) {
+                <mat-spinner diameter="18" />
+              } @else {
+                <mat-icon>photo_camera</mat-icon>
+              }
+              Cambiar foto
+            </button>
+            @if (avatarUrl()) {
+              <button
+                mat-stroked-button
+                type="button"
+                color="warn"
+                (click)="deletePhoto()"
+                [disabled]="deletingPhoto()"
+              >
+                @if (deletingPhoto()) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  <mat-icon>delete</mat-icon>
+                }
+                Eliminar foto
+              </button>
             }
-            Cambiar foto
-          </button>
+          </div>
           <input
             #photoInput
             type="file"

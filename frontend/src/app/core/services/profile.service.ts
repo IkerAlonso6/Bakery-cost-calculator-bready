@@ -24,12 +24,7 @@ export class ProfileService {
     return this.http.post<void>(`${this.base}/photo`, form);
   }
 
-  /**
-   * URL de la foto de perfil. El parámetro de cache-busting fuerza al
-   * navegador a recargarla tras un cambio.
-   */
-  photoUrl(cacheBust?: number | string): string {
-    const suffix = cacheBust != null ? `?v=${cacheBust}` : '';
-    return `${this.base}/photo${suffix}`;
+  deletePhoto(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/photo`);
   }
 }

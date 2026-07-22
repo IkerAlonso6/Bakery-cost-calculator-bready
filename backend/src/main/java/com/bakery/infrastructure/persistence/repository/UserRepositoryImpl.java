@@ -74,6 +74,15 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
+    public void deletePhoto(Integer userId) {
+        UserEntity entity = jpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found with id: " + userId));
+        entity.setPhoto(null);
+        entity.setPhotoContentType(null);
+        jpaRepository.save(entity);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Optional<StoredPhoto> findPhoto(Integer userId) {
         return jpaRepository.findById(userId)

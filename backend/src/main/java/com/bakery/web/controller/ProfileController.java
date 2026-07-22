@@ -9,6 +9,7 @@ import com.bakery.domain.model.User;
 import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,5 +66,11 @@ public class ProfileController {
                                 photo.getContentType() != null ? photo.getContentType() : MediaType.IMAGE_JPEG_VALUE))
                         .body(photo.getContent()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/photo")
+    public ResponseEntity<Void> deletePhoto() {
+        profileService.deletePhoto();
+        return ResponseEntity.noContent().build();
     }
 }
