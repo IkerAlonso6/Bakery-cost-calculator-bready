@@ -8,11 +8,12 @@
 // ---------------------------------------------------------------------------
 // "Artisan Harvest" design system (docs/design/stitch-diseño-Bakery-cost-calculator)
 // Warm bakery aesthetic: Warm Wood primary, Gold/Wheat secondary, Cream surfaces,
-// Literata serif headlines + Hanken Grotesk sans body/data.
+// Hanken Grotesk for both headlines and body/data.
 // ---------------------------------------------------------------------------
 
 html {
   height: 100%;
+  font-family: var(--brand-font-body);
 
   // Base M3 theme (state layers, elevation, base typography structure); the
   // exact color/typography/shape tokens are overridden below with the values
@@ -23,7 +24,7 @@ html {
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
-      typography: Roboto,
+      typography: 'Hanken Grotesk',
       density: 0,
     )
   );
@@ -77,22 +78,10 @@ html {
   --mat-sys-on-background: #0d1c2e;
   --mat-sys-surface-variant: #d5e3fc;
 
-  // --- Typography: Literata (serif) for headlines/titles, Hanken Grotesk for body/labels/data ---
-  --mat-sys-display-large-font: 'Literata', serif;
-  --mat-sys-display-medium-font: 'Literata', serif;
-  --mat-sys-display-small-font: 'Literata', serif;
-  --mat-sys-headline-large-font: 'Literata', serif;
-  --mat-sys-headline-medium-font: 'Literata', serif;
-  --mat-sys-headline-small-font: 'Literata', serif;
-  --mat-sys-title-large-font: 'Literata', serif;
-  --mat-sys-title-medium-font: 'Literata', serif;
-  --mat-sys-title-small-font: 'Literata', serif;
-  --mat-sys-body-large-font: 'Hanken Grotesk', sans-serif;
-  --mat-sys-body-medium-font: 'Hanken Grotesk', sans-serif;
-  --mat-sys-body-small-font: 'Hanken Grotesk', sans-serif;
-  --mat-sys-label-large-font: 'Hanken Grotesk', sans-serif;
-  --mat-sys-label-medium-font: 'Hanken Grotesk', sans-serif;
-  --mat-sys-label-small-font: 'Hanken Grotesk', sans-serif;
+  // Typography: `typography: 'Hanken Grotesk'` above already makes mat.theme()
+  // bake that family into every M3 token (both the composite shorthands like
+  // --mat-sys-body-medium that most Material components consume, and the
+  // -font sub-tokens) — no per-token override needed here.
 
   // --- Shape: rounded "friendly cafe" language (docs DESIGN.md `rounded:`) ---
   --mat-sys-corner-extra-small: 4px;
@@ -106,7 +95,7 @@ html {
   --brand-loss-red: #bc4749;
   --brand-indicator-mint: #d8f3dc;
   --brand-surface-cream: #faf9f6;
-  --brand-font-headline: 'Literata', serif;
+  --brand-font-headline: 'Hanken Grotesk', sans-serif;
   --brand-font-body: 'Hanken Grotesk', sans-serif;
 }
 
