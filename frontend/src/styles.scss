@@ -8,7 +8,8 @@
 // ---------------------------------------------------------------------------
 // "Artisan Harvest" design system (docs/design/stitch-diseño-Bakery-cost-calculator)
 // Warm bakery aesthetic: Warm Wood primary, Gold/Wheat secondary, Cream surfaces,
-// Hanken Grotesk for both headlines and body/data.
+// Literata serif headlines (--brand-font-headline) + Hanken Grotesk sans
+// body/data (--brand-font-body, and the base for every Material component).
 // ---------------------------------------------------------------------------
 
 html {
@@ -78,10 +79,12 @@ html {
   --mat-sys-on-background: #0d1c2e;
   --mat-sys-surface-variant: #d5e3fc;
 
-  // Typography: `typography: 'Hanken Grotesk'` above already makes mat.theme()
-  // bake that family into every M3 token (both the composite shorthands like
-  // --mat-sys-body-medium that most Material components consume, and the
-  // -font sub-tokens) — no per-token override needed here.
+  // Typography: `typography: 'Hanken Grotesk'` above makes mat.theme() bake
+  // that family into every M3 token Material's own components consume
+  // (composite shorthands like --mat-sys-body-medium, and their -font
+  // sub-tokens). Literata is applied separately, only where the design
+  // called for it, via --brand-font-headline below (h1-h4, card titles,
+  // wordmark, prices, period label — see grep for `brand-font-headline`).
 
   // --- Shape: rounded "friendly cafe" language (docs DESIGN.md `rounded:`) ---
   --mat-sys-corner-extra-small: 4px;
@@ -95,7 +98,7 @@ html {
   --brand-loss-red: #bc4749;
   --brand-indicator-mint: #d8f3dc;
   --brand-surface-cream: #faf9f6;
-  --brand-font-headline: 'Hanken Grotesk', sans-serif;
+  --brand-font-headline: 'Literata', serif;
   --brand-font-body: 'Hanken Grotesk', sans-serif;
 }
 
