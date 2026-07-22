@@ -11,7 +11,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { map } from 'rxjs';
 import { NAV_ITEMS } from '../nav-items';
 import { AuthService } from '../../services/auth.service';
-import { ProfileService } from '../../services/profile.service';
 
 @Component({
   selector: 'app-shell',
@@ -32,14 +31,9 @@ import { ProfileService } from '../../services/profile.service';
 export class ShellComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly authService = inject(AuthService);
-  private readonly profileService = inject(ProfileService);
   protected readonly navItems = NAV_ITEMS;
   protected readonly user = this.authService.currentUser;
-
-  protected readonly avatarUrl = computed(() => {
-    const u = this.user();
-    return u?.hasPhoto ? this.profileService.photoUrl() : null;
-  });
+  protected readonly avatarUrl = this.authService.avatarUrl;
 
   protected readonly initials = computed(() => {
     const name = this.user()?.displayName ?? '';
